@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="94db48b153bb">
+<meta name="build" content="f66e316e5e28">
 <title>Financial Record</title>
 <meta name="theme-color" content="#021A54">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -501,7 +501,7 @@ main{position:relative}
 .sgroups{width:100%;max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
 .sprof{display:flex;gap:18px;align-items:center;padding:18px 20px;background-color:var(--surface);background-image:var(--grain);border:1px solid var(--line);border-radius:22px}
 .sav{flex:none;width:72px;height:72px;border-radius:50%;background:var(--hot);color:var(--on-hot);display:grid;place-items:center;border:1.5px solid var(--stroke)}
-.sav{overflow:hidden}.sav img{width:100%;height:100%;object-fit:cover;display:block}.sav .ico{width:34px;height:34px}.sinfo{min-width:0}.smail{overflow-wrap:anywhere}
+.sav{overflow:hidden;position:relative}.sav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.sini{font-size:32px;font-weight:700}.sav .ico{width:34px;height:34px}.sinfo{min-width:0}.smail{overflow-wrap:anywhere}
 .sname{font-size:38px;line-height:1.1}
 .smail{color:var(--ink2)}
 .slink{background:none;border:0;padding:6px 0;color:var(--hot);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
@@ -617,7 +617,7 @@ function parseAuthReturn(){
   var p=new URLSearchParams(h),pg=(p.get('state')||'').replace(/^fin:/,'')||'dashboard';
   if(p.get('access_token')){
     tok=p.get('access_token');tokExp=Date.now()+(+p.get('expires_in')||3600)*1000;
-    lsSet('fin.tok',tok);lsSet('fin.exp',String(tokExp));lsSet('fin.signed','1');
+    lsSet('fin.tok',tok);lsSet('fin.exp',String(tokExp));lsSet('fin.signed','1');lsSet('fin.sv','2');
   } else if(p.get('error')){S.authError=p.get('error');lsSet('fin.signed','0')}
   try{history.replaceState(null,'',location.pathname+location.search+'#'+pg)}catch(e){location.hash='#'+pg}
 }
@@ -1171,7 +1171,7 @@ function pgSettings(){
   holdAll('Stock').filter(function(h){return isActive(h)||h.target>0}).forEach(function(s){tg+=nrow('tgt'+s.row,s.name,+((s.target||0)*100).toFixed(2),'target','%')});
   function grp(t,body,act){return '<section class="sgroup"><h3 class="slabel">'+esc(tc(t))+'</h3><div class="slist">'+body+'<div class="sfoot"><button class="btn primary" type="button" data-act="set-save" data-g="'+act+'">Save</button><span class="calc" id="sum-'+act+'"></span><span class="err" id="serr-'+act+'"></span></div></div></section>'}
   return '<div class="sgroups">'+head('Settings')
-    +'<section class="sprof"><span class="sav">'+(gu&&gu.picture?'<img src="'+esc(gu.picture)+'" alt="" referrerpolicy="no-referrer">':svgi(IX.user))+'</span><div class="sinfo"><div class="sname">'+esc((gu&&gu.name)||'Financial Record')+'</div><div class="smail">'+esc((gu&&gu.email)||'Google Sheet · Financial Document')+'</div><button class="slink" type="button" data-act="refresh">'+svgi(IX.line)+'Refresh Data</button></div></section>'
+    +'<section class="sprof"><span class="sav">'+(gu&&(gu.picture||gu.name)?'<b class="sini">'+esc(String(gu.name||gu.email||'?').charAt(0).toUpperCase())+'</b>'+(gu.picture?'<img src="'+esc(gu.picture)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''):svgi(IX.user))+'</span><div class="sinfo"><div class="sname">'+esc((gu&&gu.name)||'Financial Record')+'</div><div class="smail">'+esc((gu&&gu.email)||'Google Sheet · Financial Document')+'</div><button class="slink" type="button" data-act="refresh">'+svgi(IX.line)+'Refresh Data</button></div></section>'
     +grp('Weekly Income',nrow('inc','Weekly income',num(D('F',2))||0,'wallet','฿'),'inc')
     +grp('Gold',nrow('gold','Gold total',num(D('I',6))||0,'coin','฿'),'gold')
     +grp('Account Allocation',acc,'acc')
@@ -1336,6 +1336,7 @@ chrome();
 (function(){
   if(!CLIENT_ID){S.err={code:'setup'};render();return}
   restoreToken();
+  if(haveToken()&&lsGet('fin.sv')!=='2'&&!S.authError){startAuth(false);return}
   if(haveToken()){mcp=true;loadAll();fetchUser();return}
   if(lsGet('fin.signed')==='1'&&!S.authError){startAuth(true);return}
   S.err={code:'needs_signin'};render();
