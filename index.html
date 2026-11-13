@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="33ffcdb4048d">
+<meta name="build" content="48bca2dbbed8">
 <title>Financial Record</title>
-<meta name="theme-color" content="#021A54">
+<meta name="theme-color" content="#0A2947">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Financial Record">
@@ -421,7 +421,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 .card{--cp:clamp(14px,1.4vw + 8px,22px);padding:var(--cp);position:relative;overflow:hidden;background-color:var(--surface);background-image:var(--grain)}
 .card>*{position:relative;z-index:1}
 .card:not(.navy)::after{content:"";position:absolute;right:0;bottom:0;width:150px;height:150px;z-index:0;pointer-events:none;opacity:.5;
-  background:radial-gradient(circle,color-mix(in srgb,var(--main) 55%,var(--ink)) 1.3px,transparent 1.8px) 0 0/12px 12px;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 60%,var(--ink)) 1.3px,transparent 1.8px) 0 0/12px 12px;
   -webkit-mask:radial-gradient(circle at 100% 100%,#000 0,transparent 68%);mask:radial-gradient(circle at 100% 100%,#000 0,transparent 68%)}
 .card>h2:first-child{display:flex;align-items:center;gap:10px;margin:calc(var(--cp)*-1) calc(var(--cp)*-1) 12px;padding:12px var(--cp);
   background-color:var(--main);color:var(--on-main);border-bottom:1.5px solid var(--stroke);
@@ -452,18 +452,18 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 
 /* page ground: mostly neutral, with grain over the bubbles and contour lines */
 body::after{background-image:
-    radial-gradient(circle at 92% 12%,color-mix(in srgb,var(--main) 30%,transparent) 0 70px,transparent 72px),
-    radial-gradient(circle at 6% 46%,color-mix(in srgb,var(--main) 22%,transparent) 0 110px,transparent 112px),
-    radial-gradient(circle at 80% 86%,color-mix(in srgb,var(--main) 26%,transparent) 0 90px,transparent 92px),
+    radial-gradient(circle at 92% 12%,color-mix(in srgb,var(--accent) 30%,transparent) 0 70px,transparent 72px),
+    radial-gradient(circle at 6% 46%,color-mix(in srgb,var(--accent) 22%,transparent) 0 110px,transparent 112px),
+    radial-gradient(circle at 80% 86%,color-mix(in srgb,var(--accent) 26%,transparent) 0 90px,transparent 92px),
     radial-gradient(circle at 20% 94%,color-mix(in srgb,var(--hot) 24%,transparent) 0 40px,transparent 42px),
-    radial-gradient(ellipse 60% 40% at 100% 100%,color-mix(in srgb,var(--main) 24%,transparent),transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,color-mix(in srgb,var(--accent) 24%,transparent),transparent 70%),
     var(--tex-line),
     radial-gradient(circle,color-mix(in srgb,var(--ink) 14%,transparent) 1px,transparent 1.6px),
     var(--grain);
   background-size:auto,auto,auto,auto,auto,cover,22px 22px,180px 180px;
   background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,repeat,repeat;
   background-position:0 0,0 0,0 0,0 0,0 0,center,0 0,0 0}
-html::after{background:var(--main);opacity:.3}
+html::after{background:var(--accent);opacity:.3}
 
 /* ---------- fonts: Symphony-style script for the title & headings, Perandory-style condensed serif for everything else ---------- */
 :root{--font:"Libre Caslon Condensed","Perandory",Georgia,"Times New Roman",serif;--font-display:"Pinyon Script","Symphony","Snell Roundhand","Apple Chancery",cursive}
@@ -515,9 +515,9 @@ main{position:relative}
 .sico .ico{width:26px;height:26px}
 .stxt{flex:1;min-width:0;font-size:clamp(17px,.2vw + 16px,19px)}
 .srow input{width:7.5em;min-height:44px;text-align:right;border:0;background:transparent;padding:8px 6px;font-size:18px;font-weight:600;border-radius:12px;color:var(--ink)}
-.srow input:focus{background:color-mix(in srgb,var(--main) 30%,var(--surface))}
+.srow input:focus{background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
 .sunit{font-style:normal;color:var(--ink2);width:1.1em;text-align:center}
-.sfoot{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--main) 45%,var(--surface))}
+.sfoot{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
 .sprof{gap:20px}
 .sav{width:80px;height:80px;box-shadow:0 2px 0 var(--stroke)}
 .sav .scam{right:-4px;bottom:-4px;width:28px;height:28px;background:var(--surface);color:var(--ink);box-shadow:none}
@@ -529,6 +529,44 @@ main{position:relative}
 .slink{padding:4px 0;font-size:clamp(15px,.2vw + 14px,16.5px);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .slinks{gap:2px 18px}
 @media (max-width:599px){.sprof{flex-direction:column;align-items:flex-start;gap:14px}}
+
+/* ---------- strong contrast on every tab (like Fund): deep tab colour for the header & title bands, light accent for actions ---------- */
+:root[data-page="consumption"]{--mainL:#A8336B;--onL:#FFE3EF;--hotL:#FFD9A0;--onHotL:#3A1020}
+:root[data-page="set-50"]{--mainL:#1A3263;--onL:#FFE9C2;--hotL:#FFC570;--onHotL:#1A3263}
+:root[data-page="usd"]{--mainL:#6B4423;--onL:#F7E6D0;--hotL:#EFD2B0;--onHotL:#3A2410}
+:root[data-page="shopping"]{--mainL:#4F5E3A;--onL:#EEF1DC;--hotL:#D7DEA8;--onHotL:#26301A}
+:root[data-page="settings"]{--mainL:#2F3340;--onL:#F5F5F5;--hotL:#FFFFFF;--onHotL:#021A54}
+.hico,.tico,.sav{border-color:var(--on-main)}
+.slabel{display:inline-block;background-color:var(--main);color:var(--on-main);padding:2px 20px 6px;border-radius:999px;margin:18px 0 8px;font-size:30px;background-image:repeating-linear-gradient(135deg,transparent 0 7px,color-mix(in srgb,var(--on-main) 13%,transparent) 7px 8px);border:1.5px solid var(--stroke)}
+.slist,.sprof{border:1.5px solid var(--stroke);box-shadow:3px 3px 0 var(--stroke)}
+.sfoot{background:color-mix(in srgb,var(--accent) 16%,var(--surface))}
+.card>h2.hi{border-bottom-color:var(--stroke)}
+.top{border-color:var(--stroke)}
+
+/* ================= Palette v3 (60 / 30 / 10) =================
+   60% warm cream neutrals (#F5EFE1 / #F3E4C9)  ·  30% tab colour: header, title bands, tiles  ·  10% accent: actions, active tab, badges
+   Dashboard #0A2947 · Consumption #6C1A1A · SET 50 #F8E0A4 · Fund #31AAA9 · USD #A82020 · Shopping #AEC4D4 · Settings #8B5E3C */
+:root{--bg:#F5EFE1;--surface:#FBF8EF;--ink:#1d1512;--ink2:#52463e;--muted:#8a8070;--grid:#e8dec7;--axis:#d3c5a8;
+  --e-share:#D4A03C;--e-fund:#31AAA9;--e-saving:#A82020;--e-cons:#6C1A1A;--e-shop:#6F93AD;--e-gold:#A9822B;--on-mark:#F5EFE1}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#130e0d;--surface:color-mix(in srgb,var(--main) 22%,#1d1714);--ink:#F3E4C9;--ink2:#cdbfa6;--muted:#968a76;--grid:#3a2f2a;--axis:#54463c;
+  --e-share:#F8E0A4;--e-fund:#5FCFCD;--e-saving:#E26A6A;--e-cons:#D98B8B;--e-shop:#AEC4D4;--e-gold:#C9A94E;--on-mark:#130e0d}}
+:root[data-theme="dark"]{--bg:#130e0d;--surface:color-mix(in srgb,var(--main) 22%,#1d1714);--ink:#F3E4C9;--ink2:#cdbfa6;--muted:#968a76;--grid:#3a2f2a;--axis:#54463c;
+  --e-share:#F8E0A4;--e-fund:#5FCFCD;--e-saving:#E26A6A;--e-cons:#D98B8B;--e-shop:#AEC4D4;--e-gold:#C9A94E;--on-mark:#130e0d}
+
+:root[data-page="dashboard"]{--tint:4%;--mainL:#0A2947;--onL:#F3E4C9;--mainD:#0A2947;--onD:#F3E4C9;--ac:#0A2947;--acd:#AEC4D4;--aciL:#F3E4C9;--hotL:#D3D4C0;--onHotL:#0A2947;--hotD:#D3D4C0;--onHotD:#0A2947}
+:root[data-page="consumption"]{--tint:5%;--mainL:#6C1A1A;--onL:#F5EFE1;--mainD:#4A1212;--onD:#F3E4C9;--ac:#6C1A1A;--acd:#D98B8B;--aciL:#F5EFE1;--hotL:#E5D3AF;--onHotL:#2D0000;--hotD:#E5D3AF;--onHotD:#2D0000}
+:root[data-page="set-50"]{--tint:6%;--mainL:#F8E0A4;--onL:#3A1010;--mainD:#5A4A1A;--onD:#F8E0A4;--ac:#D4A03C;--acd:#F8E0A4;--aciL:#3A1010;--hotL:#0A2947;--onHotL:#F8E0A4;--hotD:#F8E0A4;--onHotD:#2b2208}
+:root[data-page="fund"]{--tint:5%;--mainL:#31AAA9;--onL:#0A2947;--mainD:#1D6E6D;--onD:#F3E4C9;--ac:#31AAA9;--acd:#5FCFCD;--aciL:#0A2947;--hotL:#F8E0A4;--onHotL:#0A2947;--hotD:#F8E0A4;--onHotD:#0A2947}
+:root[data-page="usd"]{--tint:5%;--mainL:#A82020;--onL:#F5EFE1;--mainD:#7A1717;--onD:#F3E4C9;--ac:#A82020;--acd:#E26A6A;--aciL:#F5EFE1;--hotL:#AEC4D4;--onHotL:#0A2947;--hotD:#AEC4D4;--onHotD:#0A2947}
+:root[data-page="shopping"]{--tint:6%;--mainL:#AEC4D4;--onL:#0A2947;--mainD:#34495A;--onD:#F3E4C9;--ac:#6F93AD;--acd:#AEC4D4;--aciL:#0A2947;--hotL:#6C1A1A;--onHotL:#F5EFE1;--hotD:#F3E4C9;--onHotD:#0A2947}
+:root[data-page="settings"]{--tint:5%;--mainL:#8B5E3C;--onL:#F5EFE1;--mainD:#5E3F27;--onD:#F3E4C9;--ac:#8B5E3C;--acd:#E5D3AF;--aciL:#F5EFE1;--hotL:#E5D3AF;--onHotL:#2D1A0C;--hotD:#E5D3AF;--onHotD:#2D1A0C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--tint:9%}}
+:root[data-theme="dark"]{--tint:9%}
+.hico,.tico,.sav{border-color:var(--on-main)}
+.card.navy{background-color:#0A2947;color:#F3E4C9;background-image:var(--grain-light),radial-gradient(circle,rgba(243,228,201,.16) 1px,transparent 1.7px)}
+.card.navy .lbl,.card.navy .hero-n{color:#F3E4C9}
+.card.navy::after{background:#A82020}
+.card.navy::before{background:#F8E0A4}
 </style>
 </head>
 <body>
@@ -848,8 +886,8 @@ function calcUpd(){
 }
 function pgDash(){
   var weekly=num(D('F',2)),total=num(D('I',10)),cash=num(D('K',30));
-  var port=[['Gold',6],['Share',7],['Fund',8],['Saving',9]].map(function(a){return {label:a[0],value:num(D('I',a[1]))||0,color:ENT[a[0]],dark:a[0]==='Share'||a[0]==='Shopping'||a[0]==='Consumption'}});
-  var purp=[];for(var r=6;r<=10;r++){var n=String(D('E',r)).trim();if(n)purp.push({label:n,value:num(D('G',r))||0,color:ENT[n]||'var(--e-other)',dark:n==='Share'||n==='Shopping'||n==='Consumption'})}
+  var port=[['Gold',6],['Share',7],['Fund',8],['Saving',9]].map(function(a){return {label:a[0],value:num(D('I',a[1]))||0,color:ENT[a[0]],dark:a[0]==='Share'||a[0]==='Shopping'||a[0]==='Fund'}});
+  var purp=[];for(var r=6;r<=10;r++){var n=String(D('E',r)).trim();if(n)purp.push({label:n,value:num(D('G',r))||0,color:ENT[n]||'var(--e-other)',dark:n==='Share'||n==='Shopping'||n==='Fund'})}
   var cashItems=[];for(r=26;r<=29;r++){var nm=String(D('J',r)).trim();if(nm)cashItems.push({label:nm,value:num(D('K',r))||0,text:baht(num(D('K',r)))})}
   var plan=[];for(r=28;r<=30;r++){var pn=String(D('B',r)).trim();if(pn)plan.push({label:pn,labelHtml:topLbl(pn,num(D('E',r))),value:pct(D('D',r))||0,target:pct(D('C',r))||0,text:pc(pct(D('D',r)))+' of '+pc(pct(D('C',r)),0),tip:pn+'\nNow '+pc(pct(D('D',r)))+', target '+pc(pct(D('C',r)),0)})}
   var cat=[];for(r=6;r<=10;r++){var cn=String(D('K',r)).trim();if(cn)cat.push({color:'var(--e-cons)',label:cn,value:num(D('L',r))||0,text:baht(num(D('L',r)))+' · '+pc(pct(D('M',r)),0)})}
