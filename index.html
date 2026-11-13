@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="4a876e489c79">
+<meta name="build" content="33ffcdb4048d">
 <title>Financial Record</title>
 <meta name="theme-color" content="#021A54">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -518,6 +518,17 @@ main{position:relative}
 .srow input:focus{background:color-mix(in srgb,var(--main) 30%,var(--surface))}
 .sunit{font-style:normal;color:var(--ink2);width:1.1em;text-align:center}
 .sfoot{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--main) 45%,var(--surface))}
+.sprof{gap:20px}
+.sav{width:80px;height:80px;box-shadow:0 2px 0 var(--stroke)}
+.sav .scam{right:-4px;bottom:-4px;width:28px;height:28px;background:var(--surface);color:var(--ink);box-shadow:none}
+.sav .scam .ico{width:15px;height:15px;stroke-width:2}
+.sinfo{display:flex;flex-direction:column;gap:2px}
+.sname{font-size:36px;line-height:1}
+.smail{font-size:clamp(15px,.2vw + 14px,16.5px);color:var(--ink2)}
+.slinks{margin-top:8px;gap:2px 0}
+.slink{padding:4px 0;font-size:clamp(15px,.2vw + 14px,16.5px);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.slinks{gap:2px 18px}
+@media (max-width:599px){.sprof{flex-direction:column;align-items:flex-start;gap:14px}}
 </style>
 </head>
 <body>
@@ -552,6 +563,7 @@ var IX={wallet:'<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12
  coin:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h3.5a1.8 1.8 0 0 1 0 3.6H11a1.8 1.8 0 0 0 0 3.6h3.5"/>',
  bag:'<path d="M6 8h12l1 12H5L6 8z"/><path d="M9 8a3 3 0 0 1 6 0"/>',cal:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
  spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',user:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18.5c1.5-3 9.5-3 11 0"/>',
+ edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'};
 function ico(n){var s=NI[n];return s?s.replace('class="ni"','class="ico"'):svgi(IX.spark)}
 function pickIco(t){t=String(t).toLowerCase();
@@ -1185,7 +1197,7 @@ function pgSettings(){
   holdAll('Stock').filter(function(h){return isActive(h)||h.target>0}).forEach(function(s){tg+=nrow('tgt'+s.row,s.name,+((s.target||0)*100).toFixed(2),'target','%')});
   function grp(t,body,act){return '<section class="sgroup"><h3 class="slabel">'+esc(tc(t))+'</h3><div class="slist">'+body+'<div class="sfoot"><button class="btn primary" type="button" data-act="set-save" data-g="'+act+'">Save</button><span class="calc" id="sum-'+act+'"></span><span class="err" id="serr-'+act+'"></span></div></div></section>'}
   return '<div class="sgroups">'+head('Settings')
-    +'<section class="sprof"><button class="sav" type="button" data-act="avatar" aria-label="Change Profile Picture">'+(av?'<img src="'+esc(av)+'" alt="">':(gu&&(gu.picture||gu.name)?'<b class="sini">'+esc(String(gu.name||gu.email||'?').charAt(0).toUpperCase())+'</b>'+(gu.picture?'<img src="'+esc(gu.picture)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''):svgi(IX.user)))+'<span class="scam">'+svgi(IX.plus)+'</span></button><input type="file" id="avatar-in" accept="image/*" hidden><div class="sinfo"><div class="sname">'+esc((gu&&gu.name)||'Financial Record')+'</div><div class="smail">'+esc((gu&&gu.email)||'Google Sheet · Financial Document')+'</div><div class="slinks"><button class="slink" type="button" data-act="avatar">'+svgi(IX.spark)+'Change Picture</button>'+(av?'<button class="slink" type="button" data-act="avatar-clear">Remove Picture</button>':'')+'<button class="slink" type="button" data-act="refresh">'+svgi(IX.line)+'Refresh Data</button></div></div></section>'
+    +'<section class="sprof"><button class="sav" type="button" data-act="avatar" aria-label="Change Profile Picture">'+(av?'<img src="'+esc(av)+'" alt="">':(gu&&(gu.picture||gu.name)?'<b class="sini">'+esc(String(gu.name||gu.email||'?').charAt(0).toUpperCase())+'</b>'+(gu.picture?'<img src="'+esc(gu.picture)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''):svgi(IX.user)))+'<span class="scam">'+svgi(IX.edit)+'</span></button><input type="file" id="avatar-in" accept="image/*" hidden><div class="sinfo"><div class="sname">'+esc((gu&&gu.name)||'Financial Record')+'</div><div class="smail">'+esc((gu&&gu.email)||'Google Sheet · Financial Document')+'</div><div class="slinks"><button class="slink" type="button" data-act="avatar">Change Picture</button>'+(av?'<button class="slink" type="button" data-act="avatar-clear">Remove Picture</button>':'')+'<button class="slink" type="button" data-act="refresh">Refresh Data</button></div></div></section>'
     +grp('Weekly Income',nrow('inc','Weekly income',num(D('F',2))||0,'wallet','฿'),'inc')
     +grp('Gold',nrow('gold','Gold total',num(D('I',6))||0,'coin','฿'),'gold')
     +grp('Account Allocation',acc,'acc')
