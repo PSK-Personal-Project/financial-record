@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="f66e316e5e28">
+<meta name="build" content="4a876e489c79">
 <title>Financial Record</title>
 <meta name="theme-color" content="#021A54">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -501,7 +501,7 @@ main{position:relative}
 .sgroups{width:100%;max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
 .sprof{display:flex;gap:18px;align-items:center;padding:18px 20px;background-color:var(--surface);background-image:var(--grain);border:1px solid var(--line);border-radius:22px}
 .sav{flex:none;width:72px;height:72px;border-radius:50%;background:var(--hot);color:var(--on-hot);display:grid;place-items:center;border:1.5px solid var(--stroke)}
-.sav{overflow:hidden;position:relative}.sav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.sini{font-size:32px;font-weight:700}.sav .ico{width:34px;height:34px}.sinfo{min-width:0}.smail{overflow-wrap:anywhere}
+.sav{overflow:visible;position:relative;cursor:pointer;padding:0;font:inherit}.sav>img,.sav>.sini,.sav>.ico{border-radius:50%}.scam{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--surface);color:var(--ink);border:1.5px solid var(--stroke);display:grid;place-items:center}.scam .ico{width:16px;height:16px}.slinks{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:2px}.sav>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.sini{font-size:32px;font-weight:700}.sav .ico{width:34px;height:34px}.sinfo{min-width:0}.smail{overflow-wrap:anywhere}
 .sname{font-size:38px;line-height:1.1}
 .smail{color:var(--ink2)}
 .slink{background:none;border:0;padding:6px 0;color:var(--hot);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
@@ -1160,10 +1160,24 @@ function pgShop(){
     +'</div>';
 }
 /* Settings */
+var avMem=null;
+function avGet(){try{return localStorage.getItem('fin.avatar')||avMem}catch(e){return avMem}}
+function avSet(v){avMem=v;try{if(v)localStorage.setItem('fin.avatar',v);else localStorage.removeItem('fin.avatar')}catch(e){}}
+function avPick(file){
+  if(!file)return;
+  var fr=new FileReader();
+  fr.onerror=function(){toast('Could not read that picture. Choose a JPG or PNG & try again.')};
+  fr.onload=function(){var im=new Image();
+    im.onerror=function(){toast('Could not read that picture. Choose a JPG or PNG & try again.')};
+    im.onload=function(){var n=256,c=document.createElement('canvas');c.width=c.height=n;var x=c.getContext('2d'),m=Math.min(im.width,im.height),sx=(im.width-m)/2,sy=(im.height-m)/2;
+      x.drawImage(im,sx,sy,m,m,0,0,n,n);avSet(c.toDataURL('image/jpeg',.88));render();toast('Profile picture updated')};
+    im.src=fr.result};
+  fr.readAsDataURL(file);
+}
 function pgSettings(){
   function rowIco(l,d){var t=String(l).toLowerCase();return /consum/.test(t)?ico('consumption'):/share|stock|set/.test(t)?ico('set-50'):/fund/.test(t)?ico('fund'):/saving|usd/.test(t)?ico('usd'):/shop/.test(t)?ico('shopping'):svgi(IX[d]||IX.spark)}
   function nrow(id,label,val,d,unit){return '<label class="srow"><span class="sico">'+rowIco(label,d)+'</span><span class="stxt">'+esc(label)+'</span><input id="'+id+'" data-s="'+id+'" type="number" step="any" inputmode="decimal" value="'+esc(val)+'" aria-label="'+esc(label)+'"><em class="sunit">'+unit+'</em></label>'}
-  var gu=(typeof window.finUser==='function')?window.finUser():null;
+  var gu=(typeof window.finUser==='function')?window.finUser():null,av=avGet();
   var acc='',pur='',plan='',tg='',r;
   for(r=6;r<=9;r++)acc+=nrow('acc'+r,D('B',r),+(pct(D('D',r))*100).toFixed(2),'wallet','%');
   for(r=6;r<=10;r++)pur+=nrow('pur'+r,D('E',r),+(pct(D('F',r))*100).toFixed(2),'pie','%');
@@ -1171,7 +1185,7 @@ function pgSettings(){
   holdAll('Stock').filter(function(h){return isActive(h)||h.target>0}).forEach(function(s){tg+=nrow('tgt'+s.row,s.name,+((s.target||0)*100).toFixed(2),'target','%')});
   function grp(t,body,act){return '<section class="sgroup"><h3 class="slabel">'+esc(tc(t))+'</h3><div class="slist">'+body+'<div class="sfoot"><button class="btn primary" type="button" data-act="set-save" data-g="'+act+'">Save</button><span class="calc" id="sum-'+act+'"></span><span class="err" id="serr-'+act+'"></span></div></div></section>'}
   return '<div class="sgroups">'+head('Settings')
-    +'<section class="sprof"><span class="sav">'+(gu&&(gu.picture||gu.name)?'<b class="sini">'+esc(String(gu.name||gu.email||'?').charAt(0).toUpperCase())+'</b>'+(gu.picture?'<img src="'+esc(gu.picture)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''):svgi(IX.user))+'</span><div class="sinfo"><div class="sname">'+esc((gu&&gu.name)||'Financial Record')+'</div><div class="smail">'+esc((gu&&gu.email)||'Google Sheet · Financial Document')+'</div><button class="slink" type="button" data-act="refresh">'+svgi(IX.line)+'Refresh Data</button></div></section>'
+    +'<section class="sprof"><button class="sav" type="button" data-act="avatar" aria-label="Change Profile Picture">'+(av?'<img src="'+esc(av)+'" alt="">':(gu&&(gu.picture||gu.name)?'<b class="sini">'+esc(String(gu.name||gu.email||'?').charAt(0).toUpperCase())+'</b>'+(gu.picture?'<img src="'+esc(gu.picture)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':''):svgi(IX.user)))+'<span class="scam">'+svgi(IX.plus)+'</span></button><input type="file" id="avatar-in" accept="image/*" hidden><div class="sinfo"><div class="sname">'+esc((gu&&gu.name)||'Financial Record')+'</div><div class="smail">'+esc((gu&&gu.email)||'Google Sheet · Financial Document')+'</div><div class="slinks"><button class="slink" type="button" data-act="avatar">'+svgi(IX.spark)+'Change Picture</button>'+(av?'<button class="slink" type="button" data-act="avatar-clear">Remove Picture</button>':'')+'<button class="slink" type="button" data-act="refresh">'+svgi(IX.line)+'Refresh Data</button></div></div></section>'
     +grp('Weekly Income',nrow('inc','Weekly income',num(D('F',2))||0,'wallet','฿'),'inc')
     +grp('Gold',nrow('gold','Gold total',num(D('I',6))||0,'coin','฿'),'gold')
     +grp('Account Allocation',acc,'acc')
@@ -1237,6 +1251,8 @@ function goldModal(){
 document.addEventListener('click',function(ev){
   var b=ev.target.closest('[data-act]');if(ev.target.id==='modal'){closeModal();return}
   if(!b)return;var act=b.getAttribute('data-act'),tab=b.getAttribute('data-tab');
+  if(act==='avatar'){var fi=document.getElementById('avatar-in');if(fi)fi.click();return}
+  if(act==='avatar-clear'){avSet(null);render();return}
   if(act==='refresh'){if(!mcp)return;loadAll();return}
   if(act==='signin'){if(!CLIENT_ID){S.err={code:'setup'};render();return}startAuth(false);return}
   if(act==='signout'){signOut();return}
@@ -1315,6 +1331,7 @@ document.addEventListener('input',function(ev){
 });
 document.addEventListener('change',function(ev){
   var t=ev.target;
+  if(t.id==='avatar-in'){var f=t.files&&t.files[0];t.value='';avPick(f);return}
   if(t.hasAttribute&&t.hasAttribute('data-cdate')){if(t.value){consPick(t.value);S.formErr.cons='';render()}return}
   if(t.hasAttribute&&t.hasAttribute('data-f')&&t.tagName==='SELECT'){S.f[t.getAttribute('data-tab')].v[t.getAttribute('data-f')]=t.value}
   if(t.hasAttribute&&t.hasAttribute('data-cf')&&t.tagName==='SELECT'){S.cf.v.title=t.value}
@@ -1336,7 +1353,6 @@ chrome();
 (function(){
   if(!CLIENT_ID){S.err={code:'setup'};render();return}
   restoreToken();
-  if(haveToken()&&lsGet('fin.sv')!=='2'&&!S.authError){startAuth(false);return}
   if(haveToken()){mcp=true;loadAll();fetchUser();return}
   if(lsGet('fin.signed')==='1'&&!S.authError){startAuth(true);return}
   S.err={code:'needs_signin'};render();
