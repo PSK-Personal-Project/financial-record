@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="build" content="9a447679b8e0">
 <title>Financial Record</title>
 <meta name="theme-color" content="#021A54">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -208,15 +209,15 @@ svg .gl{stroke-dasharray:3 4}
 
 /* ---------- decoration: scalloped flower stickers, tinted by each tab ---------- */
 :root{--flower:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Ccircle cx='50' cy='50' r='30'/%3E%3Ccircle cx='83.00' cy='50.00' r='15'/%3E%3Ccircle cx='78.58' cy='66.50' r='15'/%3E%3Ccircle cx='66.50' cy='78.58' r='15'/%3E%3Ccircle cx='50.00' cy='83.00' r='15'/%3E%3Ccircle cx='33.50' cy='78.58' r='15'/%3E%3Ccircle cx='21.42' cy='66.50' r='15'/%3E%3Ccircle cx='17.00' cy='50.00' r='15'/%3E%3Ccircle cx='21.42' cy='33.50' r='15'/%3E%3Ccircle cx='33.50' cy='21.42' r='15'/%3E%3Ccircle cx='50.00' cy='17.00' r='15'/%3E%3Ccircle cx='66.50' cy='21.42' r='15'/%3E%3Ccircle cx='78.58' cy='33.50' r='15'/%3E%3C/g%3E%3C/svg%3E")}
-.top{overflow:hidden}
+.deco{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
 .top .wrap{position:relative;z-index:1}
-.top::after,.card.navy::after,html::after{content:"";pointer-events:none;-webkit-mask:var(--flower) center/contain no-repeat;mask:var(--flower) center/contain no-repeat}
-.top::after{position:absolute;right:-34px;top:-70px;width:190px;height:190px;background:var(--on-main);opacity:.14;animation:spin 60s linear infinite}
+.deco::after,.card.navy::after,html::after{content:"";pointer-events:none;-webkit-mask:var(--flower) center/contain no-repeat;mask:var(--flower) center/contain no-repeat}
+.deco::after{position:absolute;right:-34px;top:-70px;width:190px;height:190px;background:var(--on-main);opacity:.14;animation:spin 60s linear infinite}
 .card.navy::after{position:absolute;right:-30px;top:-46px;width:200px;height:200px;background:#FF85BB;opacity:.95}
 .card.navy::before{content:"";position:absolute;right:120px;bottom:-30px;width:90px;height:90px;border-radius:50%;background:#FFC570;opacity:.9;pointer-events:none}
 html::after{position:fixed;left:-60px;bottom:-60px;width:260px;height:260px;background:var(--accent);opacity:.13;z-index:-1}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.top::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.deco::after{animation:none}}
 
 /* ---------- responsive: phone, iPad & Mac / browser window, portrait & landscape ---------- */
 html{-webkit-text-size-adjust:100%}
@@ -234,7 +235,7 @@ h2{font-size:clamp(15px,.3vw + 14px,17px)}
 @media (min-width:1280px){.wrap{max-width:1280px}.grid{gap:20px}main{gap:20px}}
 @media (min-width:1700px){.wrap{max-width:1520px}.grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}}
 /* tablets in portrait: keep two columns, trim chrome */
-@media (min-width:600px) and (max-width:1024px){.tiles{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}.top::after{width:150px;height:150px}}
+@media (min-width:600px) and (max-width:1024px){.tiles{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}.deco::after{width:150px;height:150px}}
 /* phones in portrait */
 @media (max-width:599px){
   .top .wrap{padding-block:8px;gap:8px}
@@ -250,7 +251,7 @@ h2{font-size:clamp(15px,.3vw + 14px,17px)}
   .feed li{grid-template-columns:58px minmax(0,1fr) auto;gap:4px 8px}
   .feed li>:nth-child(4){grid-column:1/-1;justify-self:end}
   .card.navy .hero-n{font-size:clamp(24px,8vw,32px)!important}
-  .top::after{width:120px;height:120px;right:-30px;top:-52px}
+  .deco::after{width:120px;height:120px;right:-30px;top:-52px}
   .top::before{display:none}
   .card.navy::after{width:140px;height:140px;right:-28px;top:-34px}
   .card.navy::before{width:64px;height:64px;right:70px;bottom:-22px}
@@ -274,6 +275,30 @@ h2{font-size:clamp(15px,.3vw + 14px,17px)}
   .btn.sm{min-height:36px}
   .fld input,.fld select,#cf-date{min-height:44px;font-size:16px}
 }
+/* Mac & wide windows: brand left, sync right, tab bar centred in between and spread across the row */
+@media (pointer:fine) and (min-width:821px){
+  .top .wrap{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px}
+  .top .wrap .brand{order:1}
+  .top .wrap .nav{order:2;width:100%;max-width:none;margin:0;padding:4px;display:flex;overflow:visible}
+  .top .wrap .sync{order:3}
+  .nav a{flex:1 1 0;justify-content:center;text-align:center;display:flex;align-items:center}
+}
+@media (pointer:fine) and (min-width:821px) and (max-width:1100px){
+  .top .wrap{grid-template-columns:minmax(0,1fr) auto}
+  .top .wrap .nav{order:3;grid-column:1/-1}
+  .top .wrap .sync{order:2}
+}
+/* ---------- fluid boxes: cards wrap, reorder & stretch to fill every row, whatever the window ---------- */
+.grid,.setgrid{--cw:360px;display:flex;flex-wrap:wrap;align-items:stretch;gap:16px}
+.grid.w3{--cw:300px}
+.grid>*,.setgrid>*{flex:1 1 min(100%,var(--cw));min-width:0}
+.card.span2{flex-basis:100%}
+.tiles{display:flex;flex-wrap:wrap;gap:12px}
+.tiles>*{flex:1 1 min(100%,150px);min-width:0}
+@media (min-width:600px) and (max-width:1024px){.tiles>*{flex-basis:min(100%,160px)}}
+@media (min-width:1280px){.grid,.setgrid{gap:20px}}
+@media (min-width:1700px){.grid{--cw:420px}.grid.w3{--cw:340px}}
+@media (max-width:599px){.grid,.setgrid{gap:14px}.tiles{gap:10px}.tiles>*{flex:1 1 calc(50% - 10px)}}
 /* ---------- bottom tab bar on phones & iPads; the top tab bar stays on Mac & wide windows ---------- */
 .ni{display:none}
 @media (pointer:coarse),(max-width:820px){
@@ -341,7 +366,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 </style>
 </head>
 <body>
-<div class="top"><div class="wrap">
+<div class="top"><div class="deco" aria-hidden="true"></div><div class="wrap">
   <div class="brand">Financial Record</div>
   <div class="sync"><span class="dot" id="dot"></span><span id="syncTxt">Connecting to your sheet</span><button class="btn sm" id="refresh" type="button">Refresh</button></div>
   <nav class="nav" id="nav" aria-label="Pages"></nav>
@@ -610,7 +635,8 @@ function render(){
   paintCharts();
 }
 function errText(e){return 'The last sync failed: '+((e&&e.message)||(e&&e.code)||'unknown error')}
-var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(paintCharts,150)});
+var rt,lastW=0;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(paintCharts,150)});
+if(window.ResizeObserver){new ResizeObserver(function(en){var w=Math.round(en[0].contentRect.width);if(w&&w!==lastW){lastW=w;clearTimeout(rt);rt=setTimeout(paintCharts,150)}}).observe(document.getElementById('view'))}
 window.addEventListener('hashchange',function(){window.scrollTo(0,0);render()});
 
 function head(t){return '<div class="pagehead"><h1>'+esc(tc(t))+'</h1></div>'}
@@ -1134,6 +1160,34 @@ chrome();
   if(lsGet('fin.signed')==='1'&&!S.authError){startAuth(true);return}
   S.err={code:'needs_signin'};render();
 })();
+})();
+</script>
+<script>
+(function(){
+  var m0=document.querySelector('meta[name=build]'),cur=m0&&m0.content;
+  try{if(/[?&]v=/.test(location.search))history.replaceState(null,'',location.pathname+location.hash)}catch(e){}
+  if(!cur||location.protocol.indexOf('http')!==0)return;
+  var busy=false;
+  function typing(){
+    var a=document.activeElement;if(a&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))return true;
+    var m=document.getElementById('modal');if(m&&m.style.display==='flex')return true;
+    var f=document.querySelectorAll('#view input:not([type=hidden]):not([type=date]):not([data-s])');
+    for(var i=0;i<f.length;i++)if(f[i].value)return true;
+    return false;
+  }
+  function check(){
+    if(busy||document.hidden)return;busy=true;
+    fetch(location.pathname+'?check',{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+      busy=false;var m=t.match(/<meta name="build" content="([^"]+)"/);
+      if(m&&m[1]!==cur&&!typing()){
+        try{toast('Updating to the latest version…')}catch(e){}
+        setTimeout(function(){location.replace(location.pathname+'?v='+m[1]+location.hash)},900);
+      }
+    }).catch(function(){busy=false});
+  }
+  setTimeout(check,4000);setInterval(check,600000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)check()});
+  window.addEventListener('online',check);
 })();
 </script>
 </body>
