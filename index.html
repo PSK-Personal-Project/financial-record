@@ -212,12 +212,90 @@ svg .gl{stroke-dasharray:3 4}
 .top .wrap{position:relative;z-index:1}
 .top::after,.card.navy::after,html::after{content:"";pointer-events:none;-webkit-mask:var(--flower) center/contain no-repeat;mask:var(--flower) center/contain no-repeat}
 .top::after{position:absolute;right:-34px;top:-70px;width:190px;height:190px;background:var(--on-main);opacity:.14;animation:spin 60s linear infinite}
-.top::before{content:"";position:absolute;left:72%;bottom:-30px;width:80px;height:80px;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--on-main) 45%,transparent);pointer-events:none}
 .card.navy::after{position:absolute;right:-30px;top:-46px;width:200px;height:200px;background:#FF85BB;opacity:.95}
 .card.navy::before{content:"";position:absolute;right:120px;bottom:-30px;width:90px;height:90px;border-radius:50%;background:#FFC570;opacity:.9;pointer-events:none}
 html::after{position:fixed;left:-60px;bottom:-60px;width:260px;height:260px;background:var(--accent);opacity:.13;z-index:-1}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.top::after{animation:none}}
+
+/* ---------- responsive: phone, iPad & Mac / browser window, portrait & landscape ---------- */
+html{-webkit-text-size-adjust:100%}
+body{font-size:clamp(14px,.3vw + 12.8px,16px)}
+main{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:min(1120px,100%)}
+h1{font-size:clamp(24px,2.4vw + 14px,36px)}
+h2{font-size:clamp(15px,.3vw + 14px,17px)}
+.lbl,.card .sub,.tile small,.calc,.fld>span{font-size:clamp(12px,.2vw + 11px,13.5px)}
+.tile b{font-size:clamp(20px,1.6vw + 12px,28px)}
+.hb-l,.hb-v,.feed li,.legend{font-size:clamp(13px,.2vw + 12px,14.5px)}
+.card{padding:clamp(14px,1.4vw + 8px,22px)}
+.grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr))}
+.nav{overflow-x:auto;scrollbar-width:none}
+@media (min-width:1280px){.wrap{max-width:1280px}.grid{gap:20px}main{gap:20px}}
+@media (min-width:1700px){.wrap{max-width:1520px}.grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}}
+/* tablets in portrait: keep two columns, trim chrome */
+@media (min-width:600px) and (max-width:1024px){.tiles{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}.top::after{width:150px;height:150px}}
+/* phones in portrait */
+@media (max-width:599px){
+  .top .wrap{padding-block:8px;gap:8px}
+  .brand{font-size:16px}
+  .nav{margin-bottom:8px;border-radius:999px}
+  .nav a{padding:7px 12px}
+  .grid,.grid.w3,.setgrid{grid-template-columns:minmax(0,1fr);gap:14px}
+  main{gap:14px;padding-block:14px 32px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .tile{padding:12px}
+  .form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fld.wide{grid-column:1/-1}
+  .feed li{grid-template-columns:58px minmax(0,1fr) auto;gap:4px 8px}
+  .feed li>:nth-child(4){grid-column:1/-1;justify-self:end}
+  .card.navy .hero-n{font-size:clamp(24px,8vw,32px)!important}
+  .top::after{width:120px;height:120px;right:-30px;top:-52px}
+  .top::before{display:none}
+  .card.navy::after{width:140px;height:140px;right:-28px;top:-34px}
+  .card.navy::before{width:64px;height:64px;right:70px;bottom:-22px}
+  html::after{width:180px;height:180px}
+  #modal{padding-inline:12px}
+  #modal .card{margin-top:2vh}
+  .row{gap:6px}
+}
+/* phones & small tablets turned sideways: short screens, so the header scrolls away instead of hogging the view */
+@media (max-height:520px) and (orientation:landscape){
+  .top{position:static}
+  body::before{display:none}
+  .top .wrap{padding-block:6px}
+  .nav{margin-bottom:6px}
+  main{padding-block:12px 24px}
+  #modal .card{margin-top:0}
+}
+/* touch screens: bigger tap targets; 16px inputs stop iOS zooming in on focus */
+@media (pointer:coarse){
+  .btn,.chip,.nav a{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+  .btn.sm{min-height:36px}
+  .fld input,.fld select,#cf-date{min-height:44px;font-size:16px}
+}
+/* ---------- bottom tab bar on phones & iPads; the top tab bar stays on Mac & wide windows ---------- */
+.ni{display:none}
+@media (pointer:coarse),(max-width:820px){
+  .top::before{display:none}
+  .nav{position:fixed;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;width:auto;max-width:560px;margin:0 auto;padding:6px;gap:2px;overflow:visible;background:var(--main);color:var(--on-main);border:1.5px solid var(--stroke);box-shadow:0 3px 0 var(--stroke),0 10px 24px rgba(0,0,0,.18)}
+  .nav a{flex:1 1 0;min-width:0;height:44px;padding:0;gap:6px;display:flex;align-items:center;justify-content:center;opacity:.9}
+  .nav a[aria-current="page"]{flex:3 1 0}
+  .ni{display:block;width:22px;height:22px;flex:none}
+  .nl{font-size:13px;font-weight:700;white-space:nowrap}
+  .nav a:not([aria-current]) .nl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .top .wrap{padding-block:10px}
+  main{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+  #toast{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+}
+/* bar rows adapt to the width of their own card, not the screen: label & value on one line, bar underneath */
+.card{container-type:inline-size}
+@container (max-width:400px){
+  .hb{grid-template-columns:minmax(0,1fr) auto;gap:3px 10px}
+  .hb-t{grid-column:1/-1;order:3}
+}
+@media (hover:hover){.tile:hover{transform:translateY(-2px)}}
+@media (hover:none){.tile:hover{transform:none}}
 
 /* ---------- background texture: soft bubbles, dashed contour lines & a faint dot grid, tinted by each tab's colour ---------- */
 :root{--tex-line:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='1200' viewBox='0 0 900 1200' fill='none' stroke='%231f2420' stroke-width='1.5' stroke-dasharray='5 8' stroke-linecap='round'%3E%3Cpath d='M-20 140C200 60 300 260 520 200S820 40 940 160'/%3E%3Cpath d='M-20 520C160 420 330 640 560 560S800 420 940 520'/%3E%3Cpath d='M-20 930C220 1010 330 800 560 880S820 1060 940 940'/%3E%3C/svg%3E")}
@@ -283,12 +361,13 @@ var mcp=false;
 var S={hold:[],dash:[],cons:[],set:[],fund:[],usd:[],shop:[],loaded:false,busy:false,err:null,authError:null,syncedAt:null,range:'30',showAll:{},
   f:{set:{type:'buy',v:{},edit:null},fund:{type:'buy',v:{},edit:null},usd:{type:'deposit',v:{},edit:null},shop:{type:'expense',v:{},edit:null}},
   cf:null,formErr:{}};
+var NI={"dashboard": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"3.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"13.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"3.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"13.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"2\"/></svg>", "consumption": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 3v5a2.5 2.5 0 0 0 5 0V3M8.5 3v18\"/><path d=\"M17.5 21V3c-2.2 1.4-3.2 4-3.2 7 0 2 1 3 3.2 3\"/></svg>", "set-50": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M5 20v-9M12 20V4M19 20v-6\" stroke-width=\"2.6\"/></svg>", "fund": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v9h9\"/></svg>", "usd": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 6.5v11M14.8 9.4c0-1.1-1.2-1.9-2.8-1.9s-2.8.8-2.8 1.9 1.2 1.7 2.8 1.9 2.8.8 2.8 1.9-1.2 1.9-2.8 1.9-2.8-.8-2.8-1.9\"/></svg>", "shopping": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M5 8.5h14l-1 11.5H6L5 8.5z\"/><path d=\"M9 8.5V7a3 3 0 0 1 6 0v1.5\"/></svg>", "settings": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\"/></svg>"};
 var PAGES=[['dashboard','Dashboard'],['consumption','Consumption'],['set-50','SET 50'],['fund','Fund'],['usd','USD'],['shopping','Shopping'],['settings','Settings']];
 var queue=[];
 
 /* ---------- helpers ---------- */
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function tc(s){return String(s==null?'':s).replace(/(^|[\s(\/-])([a-z])/g,function(m,a,b){return a+b.toUpperCase()})}
+function tc(s){var sm=/^(a|an|the|and|or|of|to|in|on|for|by|at|vs)$/;return String(s==null?'':s).replace(/(^|[\s(\/-])([a-z]+)/g,function(m,a,w,i){return (i>0&&sm.test(w))?m:a+w.charAt(0).toUpperCase()+w.slice(1)})}
 function p2(n){return String(n).padStart(2,'0')}
 function dm(d){return p2(d.getDate())+'/'+p2(d.getMonth()+1)}
 function dmy(d){return dm(d)+'/'+d.getFullYear()}
@@ -473,8 +552,8 @@ function segbar(parts){
   var lg=parts.map(function(p){return '<span><em style="background:'+p.color+'"></em>'+esc(p.label)+' <b>'+baht(p.value)+'</b></span>'}).join('');
   return '<div class="seg" role="img" aria-label="Share of total">'+seg+'</div><div class="legend">'+lg+'</div>';
 }
-function card(title,sub,body,cls){return '<section class="card '+(cls||'')+'"><h2>'+esc(tc(title))+'</h2>'+(sub?'<p class="sub">'+esc(sub)+'</p>':'<div style="height:10px"></div>')+body+'</section>'}
-function tile(l,v,s,cls){return '<div class="tile"><span class="lbl">'+esc(tc(l))+'</span><b class="'+(cls||'')+(String(v).charAt(0)==='−'?' neg':'')+'">'+v+'</b>'+(s?'<small>'+esc(s)+'</small>':'')+'</div>'}
+function card(title,sub,body,cls){return '<section class="card '+(cls||'')+'"><h2>'+esc(tc(title))+'</h2>'+'<div style="height:10px"></div>'+body+'</section>'}
+function tile(l,v,s,cls){return '<div class="tile"><span class="lbl">'+esc(tc(l))+'</span><b class="'+(cls||'')+(String(v).charAt(0)==='−'?' neg':'')+'">'+v+'</b></div>'}
 
 /* ---------- shared derived data ---------- */
 var ENT={Share:'var(--e-share)',Fund:'var(--e-fund)',Saving:'var(--e-saving)',Gold:'var(--e-gold)',Consumption:'var(--e-cons)',Shopping:'var(--e-shop)'};
@@ -495,7 +574,7 @@ function balLine(list,label){return [{points:list.filter(function(e){return e.to
 /* ---------- chrome ---------- */
 function chrome(){
   var cur=(location.hash||'#dashboard').slice(1);if(!PAGES.some(function(p){return p[0]===cur}))cur='dashboard';
-  $('#nav').innerHTML=PAGES.map(function(p){return '<a href="#'+p[0]+'"'+(p[0]===cur?' aria-current="page"':'')+'>'+p[1]+'</a>'}).join('');
+  $('#nav').innerHTML=PAGES.map(function(p){return '<a href="#'+p[0]+'"'+(p[0]===cur?' aria-current="page"':'')+'>'+(NI[p[0]]||'')+'<span class="nl">'+p[1]+'</span></a>'}).join('');
   document.documentElement.setAttribute('data-page',cur);
   var dot=$('#dot'),tx=$('#syncTxt');
   dot.className='dot '+(S.busy?'busy':S.err?'err':S.syncedAt?'ok':'');
@@ -534,7 +613,7 @@ function errText(e){return 'The last sync failed: '+((e&&e.message)||(e&&e.code)
 var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(paintCharts,150)});
 window.addEventListener('hashchange',function(){window.scrollTo(0,0);render()});
 
-function head(t,p){return '<div class="pagehead"><h1>'+esc(tc(t))+'</h1>'+(p?'<p>'+esc(p)+'</p>':'')+'</div>'}
+function head(t){return '<div class="pagehead"><h1>'+esc(tc(t))+'</h1></div>'}
 
 /* Dashboard */
 function topLbl(name,n){
@@ -549,7 +628,7 @@ function calcCardHtml(){
 function calcUpd(){
   var u=num(document.getElementById('cc-u').value),p=num(document.getElementById('cc-p').value),el=document.getElementById('cc-out');if(!el)return;
   if(u>0&&p>0){var b=trade(u,p,'buy'),s=trade(u,p,'sell');el.textContent='Value '+baht(b.val)+' · Fees and VAT '+baht(b.fees)+' · Buy total '+baht(b.total)+' · Sell net '+baht(s.total)}
-  else el.textContent='Enter units and a price.';
+  else el.textContent='';
 }
 function pgDash(){
   var weekly=num(D('F',2)),total=num(D('I',10)),cash=num(D('K',30));
@@ -565,7 +644,7 @@ function pgDash(){
   var bal=[{points:all.map(function(c){return {x:c.date.getTime(),y:c.total,tip:dmy(c.date)+'\nBalance '+baht(c.total)}})}];
   var hold=stocks().map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb),color:'var(--e-share)'}});
   var fs=funds().map(function(f){return {label:f.fund+'('+nf2.format(f.units||0)+')',value:f.pwb||0,text:baht(f.pwb),color:'var(--e-fund)'}});
-  var usdT='<div class="tiles" style="--accent:var(--e-saving)">'+tile('USD held',usd(num(D('H',23))),'Including interest')+tile('Baht paid',baht(num(D('I',23))),'Price when bought')+tile('Average rate','฿'+nf2.format(num(D('J',23))||0),'Per dollar')+tile('Interest',usd(num(D('K',23))))+'</div>';
+  var usdT='<div class="tiles" style="--accent:var(--e-saving)">'+tile('USD Held',usd(num(D('H',23))),'Including interest')+tile('Cost',baht(num(D('I',23))),'Price when bought')+tile('Average Rate','฿'+nf2.format(num(D('J',23))||0),'Per dollar')+tile('Interest',usd(num(D('K',23))))+'</div>';
   var shopT='<div class="tiles" style="--accent:var(--e-shop)">'+tile('Balance',baht(num(D('I',30))))+tile('Income',baht(num(D('L',23))))+tile('Spent',baht(num(D('M',23))))+'</div>';
   return '<section class="card navy"><div class="hero"><div><span class="lbl" style="font-size:clamp(24px,5vw,32px);font-weight:700;letter-spacing:-.02em">Total Asset</span><div class="hero-n" style="font-size:clamp(24px,5vw,30px)">'+baht((total||0)+(cash||0))+'</div>'
     +'</div>'
@@ -574,17 +653,17 @@ function pgDash(){
     +card('Income Allocation',baht(weekly)+' a week, by purpose',segbar(purp)+'<div class="row" style="margin-top:14px"><button class="btn primary" data-act="allow-open" type="button">Add allowance</button></div>')
     +card('Cash','',hbars(cashItems))
     +card('Daily Allocation','',hbars(cat))
-    +card('Other','',hbars(oth))
-    +card('Spending, last 30 days','Total spent each day',mount(function(w){return colSvg(w,220,daily,{color:'var(--e-cons)',label:'Spending last 30 days'})}))
-    +card('Make balance','Income minus spending, carried forward',mount(function(w){return lineSvg(w,220,[{color:'var(--e-cons)',points:bal[0].points}],{zero:true,area:true,label:'Make balance'})}))
+    +card('Other Expenses','',hbars(oth))
+    +card('Daily Spending','Total spent each day',mount(function(w){return colSvg(w,220,daily,{color:'var(--e-cons)',label:'Spending last 30 days'})}))
+    +card('Make Balance','Income minus spending, carried forward',mount(function(w){return lineSvg(w,220,[{color:'var(--e-cons)',points:bal[0].points}],{zero:true,area:true,label:'Make balance'})}))
     +card('Portfolio Allocation','','<span class="lbl">Total Investment</span><div style="font-size:28px;font-weight:600;letter-spacing:-.02em;margin:2px 0 14px">'+baht(total)+'</div>'+segbar(port))
     +card('Investment Plan','',hbars(plan))
-    +card('SET 50 weights','',hbars(st))
-    +card('SET 50 holdings','',hbars(hold))
-    +card('Funds','',hbars(fs))
-    +card('Foreign Saving (USD)','',usdT)
+    +card('SET 50 Weights','',hbars(st))
+    +card('SET 50 Holdings','',hbars(hold))
+    +card('Fund Holdings','',hbars(fs))
+    +card('Foreign Savings','',usdT)
     +card('Shopping','',shopT)
-    +card('Trade cost calculator','Brokerage, fees and VAT',calcCardHtml(),'span2')
+    +card('Trade Cost Calculator','Brokerage, fees and VAT',calcCardHtml(),'span2')
     +'</div>';
 }
 
@@ -620,13 +699,13 @@ function pgCons(){
   var chips=[['14','14 days'],['30','30 days'],['all','All time']].map(function(a){return '<button class="chip" type="button" data-act="range" data-v="'+a[0]+'" aria-pressed="'+(S.range===a[0])+'">'+a[1]+'</button>'}).join('');
   return head('Consumption','')
     +'<div class="row" style="justify-content:space-between"><div class="chips">'+chips+'</div></div>'
-    +'<div class="tiles">'+tile('Spent',baht(spent),rr.length+' days')+tile('Daily average',baht(avg),'Per recorded day')+tile('Highest day',hi?baht(hi.expense):'–',hi?dmy(hi.date):'')+tile('Account balance',baht(bal),'Running total')+'</div>'
+    +'<div class="tiles">'+tile('Balance',baht(bal))+tile('Daily Average',baht(avg))+tile('Total Income',baht(sum(rr,function(c){return c.income||0})))+tile('Total Expense',baht(spent))+'</div>'
     +'<div class="grid">'+consForm()
-    +card('Daily spending','Total spent each day',mount(function(w){return colSvg(w,220,daily,{label:'Daily spending'})}))
+    +card('Daily Spending','Total spent each day',mount(function(w){return colSvg(w,220,daily,{label:'Daily spending'})}))
     +card('Balance','',mount(function(w){return lineSvg(w,220,balPts,{zero:true,area:true,label:'Balance'})}))
     +card('Daily Allocation','',hbars(cats))
-    +card('Other','',hbars(others))
-    +card('Average by weekday','',mount(function(w){return colSvg(w,200,wcols,{label:'Average spending by weekday'})}))
+    +card('Other Expenses','',hbars(others))
+    +card('Weekday Average','',mount(function(w){return colSvg(w,200,wcols,{label:'Average spending by weekday'})}))
     +'</div>';
 }
 function consForm(){
@@ -636,7 +715,7 @@ function consForm(){
   var after=(prev==null?0:prev)+inc-exp,first=S.cons[0].key,last=S.cons[S.cons.length-1].key;
   var inp=function(k,l){return '<label class="fld"><span>'+l+'</span><input id="cf-'+k+'" data-cf="'+k+'" type="number" step="any" min="0" inputmode="decimal" placeholder="0" value="'+esc(v[k])+'"></label>'};
   var opts='<option value="">None</option>'+otherTitles().map(function(t){return '<option'+(v.title===t?' selected':'')+'>'+esc(t)+'</option>'}).join('');
-  return '<section class="card span2" id="consform"><h2>Day Entry</h2><div style="height:10px"></div>'
+  return '<section class="card span2" id="consform"><h2>Daily Entry</h2><div style="height:10px"></div>'
     +'<div class="row" style="margin-bottom:12px"><button class="btn sm" data-act="cdate" data-d="-1" type="button" aria-label="Previous day">‹</button>'
     +'<input id="cf-date" type="date" data-cdate="1" min="'+first+'" max="'+last+'" value="'+f.key+'" style="border:1px solid var(--axis);background:var(--surface);border-radius:8px;padding:6px 10px">'
     +'<button class="btn sm" data-act="cdate" data-d="1" type="button" aria-label="Next day">›</button><button class="btn sm" data-act="cdate" data-d="0" type="button">Today</button>'
@@ -644,21 +723,21 @@ function consForm(){
     +'<div class="form">'+inp('bf','Breakfast (฿)')+inp('lunch','Lunch (฿)')+inp('dinner','Dinner (฿)')+inp('drink','Drink (฿)')
     +'<label class="fld"><span>Other: title</span><select id="cf-title" data-cf="title">'+opts+'</select></label>'+inp('price','Other: price (฿)')+inp('income','Income (฿)')+'</div>'
     +'<div class="formfoot"><button class="btn primary" data-act="cons-save" type="button">Save Day</button><span class="calc" id="cf-calc">Spent '+baht(exp)+' · Income '+baht(inc)+' · Balance after '+baht(after)+'</span><span class="err" id="cf-err">'+esc(S.formErr.cons||'')+'</span></div>'
-    +'<p class="calc" style="margin:8px 0 0">Days between the last recorded day and this one are saved as ฿0 so the running balance stays connected.</p></section>';
+    +'</section>';
 }
 
 /* generic ledger form */
 var LSPEC={
-  set:{title:'Add to SET 50',types:[['buy','Buy'],['sell','Sell'],['dividend','Dividend'],['allowance','Allowance'],['interest','Interest'],['income','Other income'],['expense','Expense']],
+  set:{title:'New Entry',types:[['buy','Buy'],['sell','Sell'],['dividend','Dividend'],['allowance','Allowance'],['interest','Interest'],['income','Other income'],['expense','Expense']],
     fields:{buy:['stock','shares','amount','price'],sell:['stock','shares','amount','price'],dividend:['stock','amount'],allowance:['amount'],interest:['amount'],income:['amount','note'],expense:['amount','note']},
     amountLabel:{buy:'Total paid with fees (฿)',sell:'Net received (฿)',dividend:'Dividend (฿)',allowance:'Amount (฿)',interest:'Amount (฿)',income:'Amount (฿)',expense:'Amount (฿)'}},
-  fund:{title:'Add to Fund',types:[['buy','Buy fund'],['sell','Sell fund'],['allowance','Allowance'],['income','Other income'],['expense','Expense']],
+  fund:{title:'New Entry',types:[['buy','Buy fund'],['sell','Sell fund'],['allowance','Allowance'],['income','Other income'],['expense','Expense']],
     fields:{buy:['fund','units','amount'],sell:['fund','units','amount'],allowance:['amount'],income:['amount','note'],expense:['amount','note']},
     amountLabel:{buy:'Amount paid (฿)',sell:'Amount received (฿)',allowance:'Amount (฿)',income:'Amount (฿)',expense:'Amount (฿)'}},
-  usd:{title:'Add to USD',types:[['deposit','Deposit'],['buy','Buy USD'],['interest','Interest']],
+  usd:{title:'New Entry',types:[['deposit','Deposit'],['buy','Buy USD'],['interest','Interest']],
     fields:{deposit:['amount'],buy:['rate','amount'],interest:['usdamt']},
     amountLabel:{deposit:'Amount (฿)',buy:'Baht paid (฿)'}},
-  shop:{title:'Add to Shopping',types:[['income','Income'],['expense','Expense']],
+  shop:{title:'New Entry',types:[['income','Income'],['expense','Expense']],
     fields:{income:['amount','note'],expense:['amount','note']},
     amountLabel:{income:'Amount (฿)',expense:'Amount (฿)'}}
 };
@@ -683,7 +762,7 @@ function formCard(tab){
   var sp=LSPEC[tab],F=S.f[tab],ed=F.edit;
   var types=sp.types.map(function(t){return '<button class="chip" type="button" data-act="ftype" data-tab="'+tab+'" data-v="'+t[0]+'" aria-pressed="'+(F.type===t[0])+'">'+t[1]+'</button>'}).join('');
   var fl=sp.fields[F.type].map(function(k){return fieldHtml(tab,k,F.v,F.type)}).join('');
-  return '<section class="card" id="form-'+tab+'"><h2>'+esc(tc(ed?'Edit entry from '+ed.dateText:sp.title))+'</h2>'+(ed?'<p class="sub">Changes the amounts. The date stays as it was recorded.</p>':'<div style="height:10px"></div>')
+  return '<section class="card" id="form-'+tab+'"><h2>'+esc(tc(ed?'Edit Entry · '+ed.dateText:sp.title))+'</h2>'+(ed?'':'<div style="height:10px"></div>')
     +'<div class="chips" style="margin-bottom:12px">'+types+'</div><div class="form">'+fl+'</div>'
     +'<div class="calc" id="calc-'+tab+'" style="margin-top:10px">'+calcText(tab)+'</div>'
     +'<div class="formfoot"><button class="btn primary" type="button" data-act="fsave" data-tab="'+tab+'">'+(ed?'Save Changes':'Save Entry')+'</button>'+(ed?'<button class="btn" type="button" data-act="fcancel" data-tab="'+tab+'">Cancel</button>':'')+'<span class="err" id="err-'+tab+'">'+esc(S.formErr[tab]||'')+'</span></div></section>';
@@ -771,7 +850,7 @@ function drawForm(tab){var el=document.getElementById('form-'+tab);if(!el)return
 
 /* SET 50 */
 function xcOut(){
-  var X=num(S.xcVal);if(!(X>0))return '<div class="calc">Enter an amount to see how to split it across your stocks.</div>';
+  var X=num(S.xcVal);if(!(X>0))return '';
   var st=stocks(),pos=st.filter(function(s){return (s.req||0)>0}),basis=pos.length?pos:st;
   var wt=function(s){return pos.length?s.req:(s.target||0)},tw=sum(basis,wt),tot=sum(st,function(s){return s.pwb||0})+X;
   var items=st.map(function(s){var a=basis.indexOf(s)>=0&&tw?X*wt(s)/tw:0,after=((s.pwb||0)+a)/tot;
@@ -790,7 +869,7 @@ function pgSet(){
   if(py==='all'){pfTot=inv;pwb=st.map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb)+(s.shares?' · '+baht(s.pwb/s.shares):''),tip:s.stock+'\n'+s.shares+' shares\nPaid '+baht(s.pwb)+'\nPrice basis '+baht(s.shares?s.pwb/s.shares:null)}})}
   else{pwb=holdAll('Stock').filter(function(h){return isActive(h)||pfBy[h.name]}).map(function(h){return {stock:h.name}}).map(function(s){var k=pfBy[s.stock]||{sh:0,buySh:0,buy:0,net:0};pfTot+=k.net;return {label:s.stock+'('+(k.sh>0?'+':'')+k.sh+')',value:k.net,text:baht(k.net)+(k.buySh?' · '+baht(k.buy/k.buySh):''),tip:s.stock+' in '+py+'\n'+(k.sh>0?'+':'')+k.sh+' shares\nNet invested '+baht(k.net)+(k.buySh?'\nAverage buy price '+baht(k.buy/k.buySh):'')}})}
   var pfChips='<div class="chips" style="margin-bottom:10px">'+['all'].concat(pfYears).map(function(y){return '<button class="chip" type="button" data-act="pfyear" data-v="'+y+'" aria-pressed="'+(py===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>';
-  var pfAdd='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Stock">Add New Stock</button></div>';
+  var pfAdd='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Stock">New Stock</button></div>';
   var pfTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(py==='all'?'Overall portfolio':'Net invested in '+py)+'</span><b>'+baht(pfTot)+'</b></div>';
   var wt=st.map(function(s){return {label:s.stock,labelHtml:topLbl(s.stock,s.req),value:s.weight||0,target:s.target||0,text:pc(s.weight)+' / '+pc(s.target,0),tip:s.stock+'\nNow '+pc(s.weight)+'\nTarget '+pc(s.target,0)}});
   var al=st.map(function(s){return {label:s.stock,value:Math.max(s.alloc||0,0),text:baht(s.alloc)}});
@@ -803,14 +882,14 @@ function pgSet(){
   var dvTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(dy==='all'?'Overall dividend':'Dividend in '+dy)+'</span><b>'+baht(dvTot)+' · '+pc(pwbTot?dvTot/pwbTot:0)+'</b></div>';
   var cl=balLine(S.set,'Cash');
   return head('SET 50','')
-    +'<div class="tiles">'+tile('Cash waiting',baht(cash),'Not yet invested')+tile('Invested',baht(inv),'At price bought')+tile('Dividends',baht(div),'Received')+tile('Stocks',String(st.length),'Held')+'</div>'
+    +'<div class="tiles">'+tile('Cash',baht(cash),'Not yet invested')+tile('Invested',baht(inv),'At price bought')+tile('Dividends',baht(div),'Received')+tile('Stocks',String(st.length),'Held')+'</div>'
     +'<div class="grid">'+formCard('set')+feedCard('set')
     +card('Portfolio','',pfChips+pfTotal+hbars(pwb)+pfAdd)
     +card('Target Allocation','',hbars(wt))
     +card('Monthly Adjustment','',hbars(al))
-    +card('Extra Money Calculator','',xcHtml())
-    +card('Dividend','',dvChips+dvTotal+hbars(dv))
-    +card('Cash balance','',mount(function(w){return lineSvg(w,220,cl,{area:true,label:'SET 50 cash balance'})}))
+    +card('Extra Cash Allocation','',xcHtml())
+    +card('Dividends','',dvChips+dvTotal+hbars(dv))
+    +card('Cash Balance','',mount(function(w){return lineSvg(w,220,cl,{area:true,label:'SET 50 cash balance'})}))
     +'</div>';
 }
 /* Fund */
@@ -825,7 +904,7 @@ function pgFund(){
   else{pwb=holdAll('Fund').filter(function(h){return isActive(h)||by[h.name]}).map(function(h){var k=by[h.name]||{u:0,bu:0,buy:0,net:0};tot+=k.net;return {label:h.name+'('+(k.u>0?'+':'')+u4(k.u)+')',value:k.net,text:baht(k.net)+(k.bu?' · '+baht(k.buy/k.bu):''),tip:h.name+' in '+fy+'\n'+(k.u>0?'+':'')+u4(k.u)+' units\nNet invested '+baht(k.net)+(k.bu?'\nAverage buy price '+baht(k.buy/k.bu):'')}})}
   var chips=function(act,cur){return '<div class="chips" style="margin-bottom:10px">'+['all'].concat(yrs).map(function(y){return '<button class="chip" type="button" data-act="'+act+'" data-v="'+y+'" aria-pressed="'+(cur===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>'};
   var tl='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(fy==='all'?'Overall fund investment':'Net invested in '+fy)+'</span><b>'+baht(tot)+'</b></div>';
-  var add='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Fund">Add New Fund</button></div>';
+  var add='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Fund">New Fund</button></div>';
   var basis=fs.map(function(f){return {label:f.fund,value:f.basis||0,text:baht(f.basis)}});
   var sales=S.fund.filter(function(e){return e.date&&e.a&&num(e.b)<0}),sy=[];
   sales.forEach(function(e){var y=String(e.date.getFullYear());if(sy.indexOf(y)<0)sy.push(y)});sy.sort();
@@ -838,12 +917,12 @@ function pgFund(){
   var stl='<div class="row" style="justify-content:space-between;margin-bottom:4px"><span class="lbl">Sold</span><b>'+baht(sold)+'</b></div><div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(gain>=0?'Profit':'Loss')+'</span><b class="'+(gain<0?'neg':gain>0?'pos':'')+'">'+baht(Math.abs(gain))+'</b></div>';
   var warn=miss.length?'<div class="note warn">'+miss.map(function(e){return esc(e.a)+' bought '+(e.date?dmy(e.date):'')+' for '+baht(e.exp)}).join(', ')+' has no units recorded, so the unit count and price basis ignore it. Use Edit below to add the units.</div>':'';
   return head('Fund','')+warn
-    +'<div class="tiles">'+tile('Cash',baht(cash),'Not yet invested')+tile('Invested',baht(inv),'Price when bought')+tile('Funds',String(fs.length),'Held')+tile('Sales '+(gainAll<0?'loss':'profit'),baht(Math.abs(gainAll)),'All time',gainAll<0?'neg':gainAll>0?'pos':'')+'</div>'
+    +'<div class="tiles">'+tile('Cash',baht(cash),'Not yet invested')+tile('Invested',baht(inv),'Price when bought')+tile('Funds',String(fs.length),'Held')+tile((gainAll<0?'Realized Loss':'Realized Profit'),baht(Math.abs(gainAll)),'All time',gainAll<0?'neg':gainAll>0?'pos':'')+'</div>'
     +'<div class="grid">'+formCard('fund')+feedCard('fund')
     +card('Fund Investment','',chips('fyyear',fy)+tl+hbars(pwb)+add)
-    +card('Price basis','',hbars(basis))
+    +card('Price Basis','',hbars(basis))
     +card('Fund Sales','',sales.length?schips+stl+hbars(sitems):'<div class="empty">No fund sold yet</div>')
-    +card('Cash balance','',mount(function(w){return lineSvg(w,200,balLine(S.fund,'Cash'),{area:true,label:'Fund cash balance'})}))
+    +card('Cash Balance','',mount(function(w){return lineSvg(w,200,balLine(S.fund,'Cash'),{area:true,label:'Fund cash balance'})}))
     +'</div>';
 }
 /* USD */
@@ -854,11 +933,11 @@ function pgUsd(){
   var open=(held||0)-sum(S.usd.filter(function(e){return e.usd!=null&&e.a==='USD'}),function(e){return e.usd}),run=open,cum=[];
   S.usd.forEach(function(e){if(e.a==='USD'&&e.usd!=null&&e.date){run+=e.usd;cum.push({x:e.date.getTime(),y:run,tip:dmy(e.date)+'\nHolding '+usd(run)})}});
   return head('USD','')
-    +'<div class="tiles">'+tile('Dollars held',usd(held),'Including interest')+tile('Baht paid',baht(pw),'Price when bought')+tile('Average rate','฿'+nf2.format(basis||0),'Per dollar')+tile('Interest',usd(intr))+tile('Cash',baht(lastTot(S.usd)))+'</div>'
+    +'<div class="tiles">'+tile('USD Held',usd(held),'Including interest')+tile('Cost',baht(pw),'Price when bought')+tile('Average Rate','฿'+nf2.format(basis||0),'Per dollar')+tile('Interest',usd(intr))+tile('Cash',baht(lastTot(S.usd)))+'</div>'
     +'<div class="grid">'+formCard('usd')+feedCard('usd')
-    +card('Exchange rate paid','',mount(function(w){return lineSvg(w,220,rates,{dots:true,ref:basis?{value:basis,label:'Average ฿'+nf2.format(basis)}:null,yFmt:function(n){return nf2.format(n)},label:'Exchange rate paid'})}))
-    +card('Dollars held','',mount(function(w){return lineSvg(w,220,[{points:cum}],{area:true,yFmt:function(n){return '$'+ax(n)},label:'Dollars held'})}))
-    +card('Baht cash balance','',mount(function(w){return lineSvg(w,200,balLine(S.usd,'Cash'),{area:true,label:'USD cash balance'})}),'span2')
+    +card('Exchange Rate','',mount(function(w){return lineSvg(w,220,rates,{dots:true,ref:basis?{value:basis,label:'Average ฿'+nf2.format(basis)}:null,yFmt:function(n){return nf2.format(n)},label:'Exchange rate paid'})}))
+    +card('USD Holdings','',mount(function(w){return lineSvg(w,220,[{points:cum}],{area:true,yFmt:function(n){return '$'+ax(n)},label:'Dollars held'})}))
+    +card('Cash Balance','',mount(function(w){return lineSvg(w,200,balLine(S.usd,'Cash'),{area:true,label:'USD cash balance'})}),'span2')
     +'</div>';
 }
 /* Shopping */
@@ -868,9 +947,9 @@ function pgShop(){
   var items=rows.filter(function(e){return e.exp>0}).map(function(e){return {label:e.expN||'Expense',value:e.exp,text:baht(e.exp),tip:(e.expN||'Expense')+'\n'+(e.date?dmy(e.date):'')+'\n'+baht(e.exp)}}).sort(function(a,b){return b.value-a.value});
   var mi=monthCols(S.shop,function(e){return e.inc}),me=monthCols(S.shop,function(e){return e.exp});
   return head('Shopping','')
-    +'<div class="tiles">'+tile('Balance',baht(bal))+tile('Spent',baht(spent))+tile('Income',baht(inc))+tile('Biggest purchase',big?baht(big.exp):'–',big?big.expN:'')+'</div>'
+    +'<div class="tiles">'+tile('Balance',baht(bal))+tile('Spent',baht(spent))+tile('Income',baht(inc))+tile('Largest Purchase',big?baht(big.exp):'–',big?big.expN:'')+'</div>'
     +'<div class="grid">'+formCard('shop')+feedCard('shop')
-    +card('Balance over time','',mount(function(w){return lineSvg(w,220,balLine(S.shop,'Balance'),{zero:true,area:true,label:'Shopping balance'})}))
+    +card('Balance History','',mount(function(w){return lineSvg(w,220,balLine(S.shop,'Balance'),{zero:true,area:true,label:'Shopping balance'})}))
     +card('Purchases','',hbars(items))
     +card('Monthly Income','',mount(function(w){return colSvg(w,200,mi,{label:'Monthly income'})}))
     +card('Monthly Expenses','',mount(function(w){return colSvg(w,200,me,{label:'Monthly expenses'})}))
@@ -884,15 +963,15 @@ function pgSettings(){
   for(r=6;r<=10;r++)pur+=nrow('pur'+r,D('E',r)+' (%)',+(pct(D('F',r))*100).toFixed(2));
   for(r=28;r<=30;r++)plan+=nrow('plan'+r,D('B',r)+' (%)',+(pct(D('C',r))*100).toFixed(2));
   holdAll('Stock').filter(function(h){return isActive(h)||h.target>0}).forEach(function(s){tg+=nrow('tgt'+s.row,s.name+' (%)',+((s.target||0)*100).toFixed(2))});
-  function grp(t,sub,body,act,extra){return '<section class="card"><h2>'+esc(tc(t))+'</h2>'+(sub?'<p class="sub">'+sub+'</p>':'<div style="height:10px"></div>')+'<div class="form">'+body+'</div><div class="formfoot"><button class="btn primary" type="button" data-act="set-save" data-g="'+act+'">Save</button><span class="calc" id="sum-'+act+'">'+(extra||'')+'</span><span class="err" id="serr-'+act+'"></span></div></section>'}
+  function grp(t,sub,body,act,extra){return '<section class="card"><h2>'+esc(tc(t))+'</h2>'+'<div style="height:10px"></div><div class="form">'+body+'</div><div class="formfoot"><button class="btn primary" type="button" data-act="set-save" data-g="'+act+'">Save</button><span class="calc" id="sum-'+act+'">'+(extra||'')+'</span><span class="err" id="serr-'+act+'"></span></div></section>'}
   return head('Settings','')
     +'<div class="setgrid">'
-    +grp('Weekly income','',nrow('inc','Weekly income (฿)',num(D('F',2))||0),'inc')
-    +grp('Physical gold','',nrow('gold','Gold total (฿)',num(D('I',6))||0),'gold')
+    +grp('Weekly Income','',nrow('inc','Weekly income (฿)',num(D('F',2))||0),'inc')
+    +grp('Gold','',nrow('gold','Gold total (฿)',num(D('I',6))||0),'gold')
     +grp('Account allocation','',acc,'acc','')
     +grp('Income allocation','',pur,'pur','')
-    +grp('Investment plan ratio','',plan,'plan','')
-    +grp('SET 50 targets','',tg+nrow('tgttot','Total target (฿)',num(D('M',13))||0),'tgt','')
+    +grp('Investment Plan','',plan,'plan','')
+    +grp('SET 50 Targets','',tg+nrow('tgttot','Total target (฿)',num(D('M',13))||0),'tgt','')
     +'<section class="card"><h2>Account</h2><div style="height:10px"></div><div class="formfoot" style="margin-top:0"><button class="btn" type="button" data-act="signout">Sign out</button></div></section>'
     +'</div>';
 }
@@ -928,7 +1007,7 @@ function allowModal(){
 function allowSum(){var t=num($('#al-total')&&$('#al-total').value)||0,s=0;document.querySelectorAll('[data-al]').forEach(function(i){s+=num(i.value)||0});var el=$('#al-sum');if(el)el.textContent='Lines total '+baht(s)+(Math.abs(s-t)>0.005?' · '+baht(t-s)+' left to place':'')}
 function holdModal(kind){
   var st=kind==='Stock';
-  openModal('<section class="card"><h2>'+(st?'Add new stock':'Add new fund')+'</h2><p class="sub">'+(st?'It shows up in the Buy list. Set its target in Settings once you hold it.':'It shows up in the Buy list.')+'</p>'
+  openModal('<section class="card"><h2>'+(st?'New Stock':'New Fund')+'</h2>'
     +'<div class="form"><label class="fld wide"><span>'+(st?'Stock name':'Fund name')+'</span><input id="nh-name" type="text" autocomplete="off" placeholder="'+(st?'e.g. PTT':'e.g. K-USA')+'"></label>'
     +(st?'<label class="fld"><span>Target (%)</span><input id="nh-tgt" type="number" step="any" inputmode="decimal" value="0"></label>':'')+'</div>'
     +'<div class="formfoot"><button class="btn primary" type="button" data-act="hold-save" data-kind="'+kind+'">Add '+(kind==='Stock'?'Stock':'Fund')+'</button><button class="btn" type="button" data-act="modal-close">Cancel</button><span class="err" id="nh-err"></span></div></section>');
@@ -945,7 +1024,7 @@ function holdSave(b){
     .then(function(){closeModal();return afterWrite(name+' added')}).catch(function(e){b.disabled=false;doErr(e)});
 }
 function goldModal(){
-  openModal('<section class="card"><h2>Add gold</h2><p class="sub">Current total '+baht(num(D('I',6)))+'. Enter what you just bought, at the price you paid.</p>'
+  openModal('<section class="card"><h2>Add Gold</h2>'
     +'<div class="form"><label class="fld"><span>Bought (฿)</span><input id="gd-amt" type="number" step="any" inputmode="decimal"></label></div>'
     +'<div class="formfoot"><button class="btn primary" type="button" data-act="gold-save">Add to Gold</button><button class="btn" type="button" data-act="modal-close">Cancel</button><span class="err" id="gd-err"></span></div></section>');
 }
