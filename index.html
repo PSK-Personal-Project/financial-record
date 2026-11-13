@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="48bca2dbbed8">
+<meta name="build" content="1fe49007574c">
 <title>Financial Record</title>
 <meta name="theme-color" content="#0A2947">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -487,8 +487,8 @@ h1{font-size:clamp(34px,2.6vw + 22px,48px);line-height:1.1}
 /* ---------- icon decorations ---------- */
 .card>h2.hi::before{display:none}
 .hico,.tico{flex:none;display:grid;place-items:center;border-radius:50%;background:var(--hot);color:var(--on-hot);border:1.5px solid var(--stroke)}
-.hico{width:36px;height:36px}.hico .ico{width:20px;height:20px}
-.tico{position:absolute;top:10px;right:10px;width:32px;height:32px}.tico .ico{width:18px;height:18px}
+.hico{width:38px;height:38px}.hico .ico{width:27px;height:27px}
+.tico{position:absolute;top:10px;right:10px;width:34px;height:34px}.tico .ico{width:25px;height:25px}
 .tile::after{display:none}
 .tile>.tico{color:var(--on-hot)}
 .tile>span:first-child:not(.tico){display:block;padding-right:38px}
@@ -567,6 +567,30 @@ main{position:relative}
 .card.navy .lbl,.card.navy .hero-n{color:#F3E4C9}
 .card.navy::after{background:#A82020}
 .card.navy::before{background:#F8E0A4}
+.ico .f,.ico .f *,.ni .f,.ni .f *{fill:currentColor;fill-opacity:.26;stroke:none}
+.ni{stroke-width:1.8}
+
+/* ---------- refinement: lighter, cleaner ---------- */
+.ico .f,.ico .f *,.ni .f,.ni .f *{fill-opacity:.2}
+.ni{stroke-width:1.7}
+.wm{display:none}
+.tile{background-image:none}
+.tile>.tico{background:transparent;border:0;color:var(--ink);opacity:.78;width:auto;height:auto;top:12px;right:12px}
+.tile>.tico .ico{width:26px;height:26px}
+.card>h2:first-child{background-image:repeating-linear-gradient(135deg,transparent 0 9px,color-mix(in srgb,var(--on-main) 8%,transparent) 9px 10px)}
+.card:not(.navy)::after{opacity:.3}
+.hico .ico{width:26px;height:26px}
+
+/* ---------- line icons, no badges ---------- */
+.ico,.ni{stroke-width:1.5}
+.ni{stroke-width:1.6}
+.hico{background:transparent;border:0;width:auto;height:auto;color:var(--on-main)}
+.hico .ico{width:28px;height:28px}
+.card>h2:first-child{gap:12px}
+.tile>.tico{opacity:.7}
+.tile>.tico .ico{width:28px;height:28px}
+.sico .ico{width:26px;height:26px;stroke-width:1.5}
+.card.navy::after,.card.navy::before{display:none}
 </style>
 </head>
 <body>
@@ -593,19 +617,33 @@ var S={hold:[],dash:[],cons:[],set:[],fund:[],usd:[],shop:[],loaded:false,busy:f
 var NI={"dashboard": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"3.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"13.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"3.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"2\"/><rect x=\"13.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"2\"/></svg>", "consumption": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 3v5a2.5 2.5 0 0 0 5 0V3M8.5 3v18\"/><path d=\"M17.5 21V3c-2.2 1.4-3.2 4-3.2 7 0 2 1 3 3.2 3\"/></svg>", "set-50": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M5 20v-9M12 20V4M19 20v-6\" stroke-width=\"2.6\"/></svg>", "fund": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v9h9\"/></svg>", "usd": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 6.5v11M14.8 9.4c0-1.1-1.2-1.9-2.8-1.9s-2.8.8-2.8 1.9 1.2 1.7 2.8 1.9 2.8.8 2.8 1.9-1.2 1.9-2.8 1.9-2.8-.8-2.8-1.9\"/></svg>", "shopping": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M5 8.5h14l-1 11.5H6L5 8.5z\"/><path d=\"M9 8.5V7a3 3 0 0 1 6 0v1.5\"/></svg>", "settings": "<svg class=\"ni\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\"/></svg>"};
 
 /* ---------- icons: line icons used as decoration ---------- */
-function svgi(i){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+i+'</svg>'}
-var IX={wallet:'<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12.5h5v3h-5a1.5 1.5 0 0 1 0-3z"/><path d="M6 6l9-3 1 3"/>',
- bars:'<path d="M5 20V11M12 20V4M19 20v-6"/>',line:'<path d="M3 17l5-5 4 4 8-9"/><path d="M15 7h5v5"/>',
- pie:'<circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/>',list:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
- plus:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
- coin:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h3.5a1.8 1.8 0 0 1 0 3.6H11a1.8 1.8 0 0 0 0 3.6h3.5"/>',
- bag:'<path d="M6 8h12l1 12H5L6 8z"/><path d="M9 8a3 3 0 0 1 6 0"/>',cal:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
- spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',user:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18.5c1.5-3 9.5-3 11 0"/>',
- edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
- star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'};
+function svgi(i){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+i+'</svg>'}
+/* line icons: one even stroke, no fills, drawn on a 24px grid (after the accounting line-icon reference) */
+var DLR='<path d="M11.9 7.9v8.2M14.1 9.9c-.5-.9-1.2-1.3-2.2-1.3-1.2 0-2.1.7-2.1 1.6 0 2.1 4.4 1.1 4.4 3.3 0 .9-.9 1.6-2.3 1.6-1 0-1.8-.4-2.3-1.2"/>';
+var IX={
+ bank:'<path d="M3.5 9.2L12 4l8.5 5.2z"/><path d="M6.2 12.2v5M10.1 12.2v5M13.9 12.2v5M17.8 12.2v5M4.5 17.5h15M3.5 20.5h17"/>',
+ food:'<path d="M3.5 11.5h17a8.5 8 0 0 1-17 0z"/><path d="M8.5 20.5h7"/><path d="M8.5 3.5c-1.1 1.2 1.1 2.4 0 3.9M12 3c-1.1 1.2 1.1 2.5 0 4.2M15.5 3.5c-1.1 1.2 1.1 2.4 0 3.9"/>',
+ bars:'<path d="M3.5 20.5h17"/><rect x="5" y="12" width="3.2" height="8.5" rx=".7"/><rect x="10.4" y="8" width="3.2" height="12.5" rx=".7"/><rect x="15.8" y="4" width="3.2" height="16.5" rx=".7"/>',
+ pie:'<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5V12h8.5M12 12l-6 6"/>',
+ dollar:'<path d="M3 12a9 9 0 0 1 9-9 9.7 9.7 0 0 1 6.7 2.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.7 9.7 0 0 1-6.7-2.7L3 16M8 16H3v5"/>'+DLR,
+ coin:'<circle cx="12" cy="12" r="8.5"/>'+DLR,
+ bag:'<path d="M5.5 8h13l1 12.5h-15z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/>',
+ sliders:'<circle cx="8" cy="7" r="2.3"/><circle cx="16" cy="12" r="2.3"/><circle cx="9" cy="17" r="2.3"/><path d="M3.5 7h2.2M10.3 7h10.2M3.5 12h10.2M18.3 12h2.2M3.5 17h3.2M11.3 17h9.2"/>',
+ wallet:'<path d="M4 7.5v10a2 2 0 0 0 2 2h12.5a1.5 1.5 0 0 0 1.5-1.5v-9a1.5 1.5 0 0 0-1.5-1.5H6a2 2 0 0 1-2-2 2 2 0 0 1 2-2h11"/><circle cx="16" cy="13" r="1.1"/>',
+ line:'<path d="M3.5 4v16.5h17"/><path d="M7.5 15.5l3.5-4 3 2.5 5-6.5"/><path d="M15.8 7.5H19v3.2"/>',
+ list:'<path d="M7 3.5h7.5L19 8v11.5a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z"/><path d="M14.5 3.5V8H19"/><path d="M9 12h6M9 15h6M9 18h3.5"/>',
+ plus:'<circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/>',
+ target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12l6.5-6.5M15.8 4.7l.3 3.2 3.2.3"/>',
+ cal:'<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10.5h16M8.5 3.5v3.5M15.5 3.5v3.5M8.5 14.6h.01M12 14.6h.01M15.5 14.6h.01"/>',
+ spark:'<path d="M11 5l2 5.5 5.5 2-5.5 2L11 20l-2-5.5-5.5-2L9 10.5z"/><path d="M19.5 3v3.5M17.8 4.8h3.5"/>',
+ user:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="10" r="2.9"/><path d="M6.8 18c1.5-3 8.9-3 10.4 0"/>',
+ edit:'<path d="M4.5 19.5l1-4.5 9.5-9.5 3.5 3.5L9 18.5z"/><path d="M13 7.5l3.5 3.5"/>',
+ star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9L3.5 9.7l5.9-.8z"/>'};
+function svgn(i){return svgi(i).replace('class="ico"','class="ni"')}
+NI={dashboard:svgn(IX.bank),consumption:svgn(IX.food),'set-50':svgn(IX.bars),fund:svgn(IX.pie),usd:svgn(IX.dollar),shopping:svgn(IX.bag),settings:svgn(IX.sliders)};
 function ico(n){var s=NI[n];return s?s.replace('class="ni"','class="ico"'):svgi(IX.spark)}
 function pickIco(t){t=String(t).toLowerCase();
-  var R=[[/new |add |create/,'plus'],[/entr|recent|histor|feed/,'list'],[/target/,'target'],[/gold|sale|sold|invest|dividend|income/,'coin'],[/balance|cash|make|bbl|ktb|scb|account/,'wallet'],
+  var R=[[/new |add |create/,'plus'],[/entr|recent|histor|feed/,'list'],[/target/,'target'],[/gold|sale|sold|invest|dividend|income/,'coin'],[/balance|cash|make|bbl|ktb|scb|account/,'wallet'],[/total|asset/,'bank'],
    [/alloc|plan|portfolio|price basis|fund|mix/,'pie'],[/spend|daily|month|expense|breakfast|lunch|dinner|week/,'bars'],[/rate|hold|trend|exchange|profit|value/,'line'],[/shop|bag|item/,'bag'],[/year|calendar|date/,'cal']];
   for(var i=0;i<R.length;i++)if(R[i][0].test(t))return svgi(IX[R[i][1]]);return svgi(IX.spark)}
 function decorate(root,pg){
