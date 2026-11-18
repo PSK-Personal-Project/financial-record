@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="b5f71c66eec7">
+<meta name="build" content="2b2a5a879efc">
 <title>Financial Record</title>
 <meta name="theme-color" content="#0A2947">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -594,7 +594,7 @@ main{position:relative}
 .mk{display:block;font-size:10px;line-height:1.35;font-weight:500;letter-spacing:.01em;font-variant-numeric:tabular-nums;margin-top:2px}
 .mk span{display:block;white-space:nowrap}.mk i{font-style:normal;opacity:.7;margin-left:4px}
 .mk .up{color:var(--good)}.mk .dn{color:var(--bad)}
-.tile .mk{text-align:left}.hb-v .mk{text-align:right}
+.tile .mk{text-align:left}.row>b .mk{text-align:right}.hb-v .mk{text-align:right}
 .mkd{display:inline}.mkd summary{display:inline-block;list-style:none;cursor:pointer;width:18px;height:18px;vertical-align:-4px;margin-left:2px;border-radius:50%;text-align:center;line-height:18px;opacity:.75}
 .mkd summary::-webkit-details-marker{display:none}
 .mkd summary::before{content:"";display:inline-block;width:5px;height:5px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
@@ -1177,11 +1177,12 @@ function pgSet(){
   pfRows.forEach(function(e){var y=String(e.date.getFullYear());if(pfYears.indexOf(y)<0)pfYears.push(y)});pfYears.sort();
   var py=(S.pfYear&&pfYears.indexOf(S.pfYear)>=0)?S.pfYear:'all',pfBy={},pfTot=0,pwb;
   pfRows.filter(function(e){return py==='all'||String(e.date.getFullYear())===py}).forEach(function(e){var k=pfBy[e.a]||(pfBy[e.a]={sh:0,buySh:0,buy:0,net:0}),q=num(e.b);k.sh+=q;if(q>0){k.buySh+=q;k.buy+=e.exp}k.net+=e.exp-e.inc});
-  if(py==='all'){pfTot=inv;pwb=st.map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb)+(s.shares?' · '+baht(s.pwb/s.shares):''),sub:(s.shares&&s.mp>0)?'<details class="mkd"><summary aria-label="Show market price"></summary>'+mkSub(s.pwb,s.pwb/s.shares,s.shares*s.mp,s.mp,mkN,true)+'</details>':'',tip:s.stock+'\n'+s.shares+' shares\nPaid '+baht(s.pwb)+'\nPrice basis '+baht(s.shares?s.pwb/s.shares:null)+(s.mp>0?'\nMarket '+baht(s.shares*s.mp)+' @ '+baht(s.mp):'')}})}
+  if(py==='all'){pfTot=inv;pwb=st.map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb)+(s.shares?' · '+baht(s.pwb/s.shares):''),sub:(s.shares&&s.mp>0)?mkSub(s.pwb,s.pwb/s.shares,s.shares*s.mp,s.mp,mkN,true):'',tip:s.stock+'\n'+s.shares+' shares\nPaid '+baht(s.pwb)+'\nPrice basis '+baht(s.shares?s.pwb/s.shares:null)+(s.mp>0?'\nMarket '+baht(s.shares*s.mp)+' @ '+baht(s.mp):'')}})}
   else{pwb=holdAll('Stock').filter(function(h){return isActive(h)||pfBy[h.name]}).map(function(h){return {stock:h.name}}).map(function(s){var k=pfBy[s.stock]||{sh:0,buySh:0,buy:0,net:0};pfTot+=k.net;return {label:s.stock+'('+(k.sh>0?'+':'')+k.sh+')',value:k.net,text:baht(k.net)+(k.buySh?' · '+baht(k.buy/k.buySh):''),tip:s.stock+' in '+py+'\n'+(k.sh>0?'+':'')+k.sh+' shares\nNet invested '+baht(k.net)+(k.buySh?'\nAverage buy price '+baht(k.buy/k.buySh):'')}})}
   var pfChips='<div class="chips" style="margin-bottom:10px">'+['all'].concat(pfYears).map(function(y){return '<button class="chip" type="button" data-act="pfyear" data-v="'+y+'" aria-pressed="'+(py===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>';
   var pfAdd='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Stock">New Stock</button></div>';
-  var pfTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(py==='all'?'Overall portfolio':'Net invested in '+py)+'</span><b>'+baht(pfTot)+'</b></div>';
+  var mkTot=sum(st,function(x){return x.mp>0&&x.shares?x.shares*x.mp:(x.pwb||0)}),mkAny=st.some(function(x){return x.mp>0&&x.shares});
+  var pfTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(py==="all"?'Overall portfolio':'Net invested in '+py)+'</span><b>'+baht(pfTot)+(py==='all'&&mkAny?mkOne(mkN(mkTot),mkTot,pfTot):'')+'</b></div>';
   var wt=st.map(function(s){return {label:s.stock,labelHtml:topLbl(s.stock,s.req),value:s.weight||0,target:s.target||0,text:pc(s.weight)+' / '+pc(s.target,0),tip:s.stock+'\nNow '+pc(s.weight)+'\nTarget '+pc(s.target,0)}});
   var al=st.map(function(s){return {label:s.stock,value:Math.max(s.alloc||0,0),text:baht(s.alloc)}});
   var dvAll=S.set.filter(function(e){return e.incN==='Dividend'&&e.date}),dvYears=[];
