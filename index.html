@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="build" content="1fe49007574c">
+<meta name="build" content="b5f71c66eec7">
 <title>Financial Record</title>
 <meta name="theme-color" content="#0A2947">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -591,6 +591,15 @@ main{position:relative}
 .tile>.tico .ico{width:28px;height:28px}
 .sico .ico{width:26px;height:26px;stroke-width:1.5}
 .card.navy::after,.card.navy::before{display:none}
+.mk{display:block;font-size:10px;line-height:1.35;font-weight:500;letter-spacing:.01em;font-variant-numeric:tabular-nums;margin-top:2px}
+.mk span{display:block;white-space:nowrap}.mk i{font-style:normal;opacity:.7;margin-left:4px}
+.mk .up{color:var(--good)}.mk .dn{color:var(--bad)}
+.tile .mk{text-align:left}.hb-v .mk{text-align:right}
+.mkd{display:inline}.mkd summary{display:inline-block;list-style:none;cursor:pointer;width:18px;height:18px;vertical-align:-4px;margin-left:2px;border-radius:50%;text-align:center;line-height:18px;opacity:.75}
+.mkd summary::-webkit-details-marker{display:none}
+.mkd summary::before{content:"";display:inline-block;width:5px;height:5px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.mkd[open] summary::before{transform:translateY(0) rotate(-135deg)}
+.mkd summary:hover{opacity:1;background:rgba(0,0,0,.07)}
 </style>
 </head>
 <body>
@@ -734,7 +743,7 @@ function parseCons(v){
       title:String(C(r,5)||'').trim(),price:num(C(r,6))||0,income:num(C(r,7))||0,expense:num(C(r,8)),bal:num(C(r,9)),total:num(C(r,10)),rec:C(r,8)!==''}}).filter(Boolean);
 }
 function parseHold(v){var out=[];v.forEach(function(r,i){var t=String(C(r,0)).trim(),n=String(C(r,1)).trim();if(!t||!n)return;
-  out.push({row:i+2,type:t,name:n,target:pct(C(r,5))||0,units:num(C(r,6))||0,cost:num(C(r,7))||0,div:num(C(r,8))||0,sales:num(C(r,10))||0,req:num(C(r,11)),alloc:num(C(r,12))})});return out}
+  out.push({row:i+2,type:t,name:n,target:pct(C(r,5))||0,units:num(C(r,6))||0,cost:num(C(r,7))||0,div:num(C(r,8))||0,sales:num(C(r,10))||0,req:num(C(r,11)),alloc:num(C(r,12)),mp:num(C(r,13))})});return out}
 function parseLedger(v,kind){
   var out=[];
   v.forEach(function(r,i){
@@ -750,9 +759,9 @@ function loadAll(){
   S.busy=true;S.err=null;chrome();
   return rd('Dashboard!A1:O32').then(function(d){
     S.dash=d;
-    return Promise.all([rd('Consumption!B3:L400'),rd("'SET 50'!B2:J400"),rd('Fund!B2:L400'),rd('USD!B2:J400'),rd('Shopping!B2:H400'),rd('Holdings!A2:M60')]);
+    return Promise.all([rd('Consumption!B3:L400'),rd("'SET 50'!B2:J400"),rd('Fund!B2:L400'),rd('USD!B2:J400'),rd('Shopping!B2:H400'),rd('Holdings!A2:Q60')]);
   }).then(function(a){
-    S.cons=parseCons(a[0]);S.set=parseLedger(a[1],'set');S.fund=parseLedger(a[2],'fund');S.usd=parseLedger(a[3],'usd');S.shop=parseLedger(a[4],'shop');S.hold=parseHold(a[5]);
+    S.cons=parseCons(a[0]);S.set=parseLedger(a[1],'set');S.fund=parseLedger(a[2],'fund');S.usd=parseLedger(a[3],'usd');S.shop=parseLedger(a[4],'shop');S.hold=parseHold(a[5]);S.fx=num(C((a[5]||[])[0],16));
     S.loaded=true;S.syncedAt=new Date();
   }).catch(function(e){S.err=e||{code:'unknown'}}).then(function(){S.busy=false;render()});
 }
@@ -826,6 +835,7 @@ function colSvg(W,H,items,o){
   });
   return '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="'+esc(o.label||'Column chart')+'">'+g+'</svg>';
 }
+var mkN=function(n){return nf2.format(n)};
 function hbars(items,o){
   o=o||{};if(!items.length)return '<div class="empty">Nothing to chart yet</div>';
   var vals=items.map(function(i){return i.value}),tg=items.map(function(i){return i.target||0});
@@ -834,8 +844,17 @@ function hbars(items,o){
   return items.map(function(it){
     var v=it.value,l=pos(Math.min(0,v)),w=Math.abs(pos(v)-pos(0));
     return '<div class="hb" data-tip="'+esc(it.tip||(it.label+'\n'+(it.text||'')))+'"><div class="hb-l" title="'+esc(it.label)+'">'+(it.labelHtml||esc(it.label))+'</div><div class="hb-t">'+(min<0?'<i class="hb-z" style="left:'+pos(0)+'%"></i>':'')
-      +'<b class="hb-b '+(v<0?'n':'p')+'" style="left:'+l+'%;width:'+Math.max(w,.4)+'%;background:'+(v<0?'var(--bad)':(it.color||'var(--s1)'))+'"></b>'+(it.target?'<u class="hb-m" style="left:calc('+pos(it.target)+'% - 1px)"></u>':'')+'</div><div class="hb-v'+(/^−/.test(it.text||'')?' neg':'')+'">'+esc(it.text||'')+'</div></div>';
+      +'<b class="hb-b '+(v<0?'n':'p')+'" style="left:'+l+'%;width:'+Math.max(w,.4)+'%;background:'+(v<0?'var(--bad)':(it.color||'var(--s1)'))+'"></b>'+(it.target?'<u class="hb-m" style="left:calc('+pos(it.target)+'% - 1px)"></u>':'')+'</div><div class="hb-v'+(/^−/.test(it.text||'')?' neg':'')+'">'+esc(it.text||'')+(it.sub||'')+'</div></div>';
   }).join('');
+}
+function mkSub(cost,basis,mv,mp,fmt,only){
+  if(mp==null||!(mp>0))return '';
+  var cls=mp<basis-1e-9?'dn':(mp>basis+1e-9?'up':'');
+  return '<small class="mk">'+(only?'':'<span>'+fmt(cost)+' <i>'+fmt(basis)+'</i></span>')+'<span class="'+cls+'">'+fmt(mv)+' <i>'+fmt(mp)+'</i></span></small>';
+}
+function mkOne(txt,mkt,base){
+  if(!(mkt>0)||!(base>0))return '';
+  return '<small class="mk"><span class="'+(mkt<base-1e-9?'dn':(mkt>base+1e-9?'up':''))+'">'+txt+'</span></small>';
 }
 function segbar(parts){
   parts=parts.filter(function(p){return p.value>0});var tot=sum(parts,function(p){return p.value});if(!tot)return '<div class="empty">Nothing to chart yet</div>';
@@ -853,7 +872,7 @@ function holdAll(type){return (S.hold||[]).filter(function(h){return h.type===ty
 function holdBy(type,name){return holdAll(type).filter(function(h){return h.name===name})[0]}
 function isActive(h){var L=h.type==='Stock'?S.set:S.fund;return h.units>1e-6||!L.some(function(e){return e.a===h.name})}
 function stocks(){var all=holdAll('Stock').filter(isActive),tot=sum(all,function(h){return h.cost});
-  return all.map(function(h){return {row:h.row,stock:h.name,shares:h.units,weight:tot?h.cost/tot:0,pwb:h.cost,roi:h.div,yld:h.cost>0?h.div/h.cost:null,target:h.target,req:h.req,alloc:h.alloc}})}
+  return all.map(function(h){return {row:h.row,stock:h.name,mp:h.mp,shares:h.units,weight:tot?h.cost/tot:0,pwb:h.cost,roi:h.div,yld:h.cost>0?h.div/h.cost:null,target:h.target,req:h.req,alloc:h.alloc}})}
 function funds(){return holdAll('Fund').filter(isActive).map(function(h){return {row:h.row,fund:h.name,units:h.units,pwb:h.cost,basis:h.units>1e-6?h.cost/h.units:null,sales:h.sales}})}
 function lastTot(list){for(var i=list.length-1;i>=0;i--)if(list[i].tot!=null)return list[i].tot;return null}
 function recs(){return S.cons.filter(function(c){return c.rec})}
@@ -1158,7 +1177,7 @@ function pgSet(){
   pfRows.forEach(function(e){var y=String(e.date.getFullYear());if(pfYears.indexOf(y)<0)pfYears.push(y)});pfYears.sort();
   var py=(S.pfYear&&pfYears.indexOf(S.pfYear)>=0)?S.pfYear:'all',pfBy={},pfTot=0,pwb;
   pfRows.filter(function(e){return py==='all'||String(e.date.getFullYear())===py}).forEach(function(e){var k=pfBy[e.a]||(pfBy[e.a]={sh:0,buySh:0,buy:0,net:0}),q=num(e.b);k.sh+=q;if(q>0){k.buySh+=q;k.buy+=e.exp}k.net+=e.exp-e.inc});
-  if(py==='all'){pfTot=inv;pwb=st.map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb)+(s.shares?' · '+baht(s.pwb/s.shares):''),tip:s.stock+'\n'+s.shares+' shares\nPaid '+baht(s.pwb)+'\nPrice basis '+baht(s.shares?s.pwb/s.shares:null)}})}
+  if(py==='all'){pfTot=inv;pwb=st.map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb)+(s.shares?' · '+baht(s.pwb/s.shares):''),sub:(s.shares&&s.mp>0)?'<details class="mkd"><summary aria-label="Show market price"></summary>'+mkSub(s.pwb,s.pwb/s.shares,s.shares*s.mp,s.mp,mkN,true)+'</details>':'',tip:s.stock+'\n'+s.shares+' shares\nPaid '+baht(s.pwb)+'\nPrice basis '+baht(s.shares?s.pwb/s.shares:null)+(s.mp>0?'\nMarket '+baht(s.shares*s.mp)+' @ '+baht(s.mp):'')}})}
   else{pwb=holdAll('Stock').filter(function(h){return isActive(h)||pfBy[h.name]}).map(function(h){return {stock:h.name}}).map(function(s){var k=pfBy[s.stock]||{sh:0,buySh:0,buy:0,net:0};pfTot+=k.net;return {label:s.stock+'('+(k.sh>0?'+':'')+k.sh+')',value:k.net,text:baht(k.net)+(k.buySh?' · '+baht(k.buy/k.buySh):''),tip:s.stock+' in '+py+'\n'+(k.sh>0?'+':'')+k.sh+' shares\nNet invested '+baht(k.net)+(k.buySh?'\nAverage buy price '+baht(k.buy/k.buySh):'')}})}
   var pfChips='<div class="chips" style="margin-bottom:10px">'+['all'].concat(pfYears).map(function(y){return '<button class="chip" type="button" data-act="pfyear" data-v="'+y+'" aria-pressed="'+(py===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>';
   var pfAdd='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Stock">New Stock</button></div>';
@@ -1225,7 +1244,7 @@ function pgUsd(){
   var open=(held||0)-sum(S.usd.filter(function(e){return e.usd!=null&&e.a==='USD'}),function(e){return e.usd}),run=open,cum=[];
   S.usd.forEach(function(e){if(e.a==='USD'&&e.usd!=null&&e.date){run+=e.usd;cum.push({x:e.date.getTime(),y:run,tip:dmy(e.date)+'\nHolding '+usd(run)})}});
   return head('USD','')
-    +'<div class="tiles">'+tile('USD Held',usd(held),'Including interest')+tile('Cost',baht(pw),'Price when bought')+tile('Average Rate','฿'+nf2.format(basis||0),'Per dollar')+tile('Interest',usd(intr))+tile('Cash',baht(lastTot(S.usd)))+'</div>'
+    +'<div class="tiles">'+tile('USD Held',usd(held),'Including interest')+tile('Cost',baht(pw)+(S.fx>0?mkOne(mkN(held*S.fx),held*S.fx,pw):''),'Price when bought')+tile('Average Rate','฿'+nf2.format(basis||0)+(S.fx>0?mkOne(mkN(S.fx),S.fx,basis):''),'Per dollar')+tile('Interest',usd(intr))+tile('Cash',baht(lastTot(S.usd)))+'</div>'
     +'<div class="grid">'+formCard('usd')+feedCard('usd')
     +card('Exchange Rate','',mount(function(w){return lineSvg(w,220,rates,{dots:true,ref:basis?{value:basis,label:'Average ฿'+nf2.format(basis)}:null,yFmt:function(n){return nf2.format(n)},label:'Exchange rate paid'})}))
     +card('USD Holdings','',mount(function(w){return lineSvg(w,220,[{points:cum}],{area:true,yFmt:function(n){return '$'+ax(n)},label:'Dollars held'})}))
