@@ -1051,10 +1051,11 @@ function pgCons(){
   var avM=lsGet('fin.avgmode');if(avM!=='month'&&avM!=='year')avM='day';
   var avMul=avM==='month'?365.25/12:(avM==='year'?365.25:1),avName=avM==='month'?'Monthly':(avM==='year'?'Yearly':'Daily');
   var avChips=[['day','Day'],['month','Month'],['year','Year']].map(function(a){return '<button class="chip" type="button" data-act="avgmode" data-v="'+a[0]+'" aria-pressed="'+(avM===a[0])+'">'+a[1]+'</button>'}).join('');
+  var avTile='<div class="tile"><span class="lbl">'+esc(avName+' Average')+'</span><b>'+baht(avg*avMul)+'</b><div class="chips" style="margin-top:6px">'+avChips+'</div></div>';
   var chips=[['14','14 days'],['30','30 days'],['all','All time']].map(function(a){return '<button class="chip" type="button" data-act="range" data-v="'+a[0]+'" aria-pressed="'+(S.range===a[0])+'">'+a[1]+'</button>'}).join('');
   return head('Consumption','')
-    +'<div class="row" style="justify-content:space-between"><div class="chips">'+chips+'</div><div class="chips">'+avChips+'</div></div>'
-    +'<div class="tiles">'+tile('Balance',baht(bal))+tile(avName+' Average',baht(avg*avMul))+tile('Total Income',baht(sum(rr,function(c){return c.income||0})))+tile('Total Expense',baht(spent))+'</div>'
+    +'<div class="row" style="justify-content:space-between"><div class="chips">'+chips+'</div></div>'
+    +'<div class="tiles">'+tile('Balance',baht(bal))+avTile+tile('Total Income',baht(sum(rr,function(c){return c.income||0})))+tile('Total Expense',baht(spent))+'</div>'
     +'<div class="grid">'+consForm()
     +card('Daily Spending','Total spent each day',mount(function(w){return colSvg(w,220,daily,{label:'Daily spending'})}))
     +card('Balance','',mount(function(w){return lineSvg(w,220,balPts,{zero:true,area:true,label:'Balance'})}))
