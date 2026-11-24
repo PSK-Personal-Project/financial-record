@@ -759,18 +759,59 @@ function loadAll(){
   S.busy=true;S.err=null;chrome();
   return rd('Dashboard!A1:O32').then(function(d){
     S.dash=d;
-    return Promise.all([rd('Consumption!B3:L400'),rd("'SET 50'!B2:J400"),rd('Fund!B2:L400'),rd('USD!B2:J400'),rd('Shopping!B2:H400'),rd('Holdings!A2:Q60')]);
+    return Promise.all([rd('Consumption!B3:L3000'),rd("'SET 50'!B2:J3000"),rd('Fund!B2:L3000'),rd('USD!B2:J3000'),rd('Shopping!B2:H3000'),rd('Holdings!A2:Q60')]);
   }).then(function(a){
     S.cons=parseCons(a[0]);S.set=parseLedger(a[1],'set');S.fund=parseLedger(a[2],'fund');S.usd=parseLedger(a[3],'usd');S.shop=parseLedger(a[4],'shop');S.hold=parseHold(a[5]);S.fx=num(C((a[5]||[])[0],16));
     S.loaded=true;S.syncedAt=new Date();
+    return ensureConsDays().then(function(g){if(!g)return;return rd('Consumption!B3:L3000').then(function(v){S.cons=parseCons(v)})}).catch(function(){});
   }).catch(function(e){S.err=e||{code:'unknown'}}).then(function(){S.busy=false;render()});
 }
 function lastIdx(vals){var li=-1;vals.forEach(function(r,i){if(String(C(r,0)).trim()!=='')li=i});return li}
 function freshNext(tab){
-  var rng={set:"'SET 50'!I2:I400",fund:'Fund!I2:I400',usd:'USD!I2:I400',shop:'Shopping!G2:G400'}[tab];
-  return rd(rng).then(function(v){return lastIdx(v)+3});
+  var rng={set:"'SET 50'!I2:I3000",fund:'Fund!I2:I3000',usd:'USD!I2:I3000',shop:'Shopping!G2:G3000'}[tab];
+  return rd(rng).then(function(v){var row=lastIdx(v)+3;return ensureLedger(tab,row).then(function(){return row})});
 }
-function freshLastCons(){return rd('Consumption!J3:J400').then(function(v){return lastIdx(v)+3})}
+function freshLastCons(){return rd('Consumption!J3:J3000').then(function(v){return lastIdx(v)+3})}
+
+/* ---------- automatic growth: the sheet never runs out of rows ---------- */
+function rdF(range){return api('GET','https://sheets.googleapis.com/v4/spreadsheets/'+SID+'/values/'+encodeURIComponent(range)+'?valueRenderOption=FORMULA').then(function(j){return j.values||[]})}
+function sheetMeta(){
+  if(S.meta)return Promise.resolve(S.meta);
+  return api('GET','https://sheets.googleapis.com/v4/spreadsheets/'+SID+'?fields='+encodeURIComponent('sheets.properties(sheetId,title,gridProperties.rowCount)')).then(function(j){
+    var m={};(j.sheets||[]).forEach(function(x){m[x.properties.title]={id:x.properties.sheetId,rows:x.properties.gridProperties.rowCount}});S.meta=m;return m});
+}
+/* copy row tplRow (1-based) down n rows: formats for columns fc0..fc1, formulas for columns f0..f1 (0-based, end exclusive); adds grid rows if needed */
+function growRows(title,tplRow,n,fc0,fc1,f0,f1){
+  return sheetMeta().then(function(m){
+    var s=m[title],need=tplRow+n,reqs=[];
+    if(need>s.rows)reqs.push({appendDimension:{sheetId:s.id,dimension:'ROWS',length:need-s.rows}});
+    function cp(c0,c1,type){reqs.push({copyPaste:{source:{sheetId:s.id,startRowIndex:tplRow-1,endRowIndex:tplRow,startColumnIndex:c0,endColumnIndex:c1},destination:{sheetId:s.id,startRowIndex:tplRow,endRowIndex:tplRow+n,startColumnIndex:c0,endColumnIndex:c1},pasteType:type}})}
+    cp(fc0,fc1,'PASTE_FORMAT');cp(f0,f1,'PASTE_NORMAL');
+    return api('POST','https://sheets.googleapis.com/v4/spreadsheets/'+SID+':batchUpdate',{requests:reqs}).then(function(){s.rows=Math.max(s.rows,need)});
+  });
+}
+var LED={set:{n:'SET 50',q:"'SET 50'",c:'I',f0:8,f1:10},fund:{n:'Fund',q:'Fund',c:'I',f0:8,f1:11},usd:{n:'USD',q:'USD',c:'I',f0:8,f1:10},shop:{n:'Shopping',q:'Shopping',c:'G',f0:6,f1:8}};
+/* before writing a ledger row: if its balance formulas are missing, add 200 more rows of formulas and formatting */
+function ensureLedger(tab,row){
+  var L=LED[tab];
+  return rdF(L.q+'!'+L.c+row).then(function(v){
+    if(v.length&&String(v[0][0]||'')!=='')return;
+    return growRows(L.n,row-1,200,1,L.f1,L.f0,L.f1);
+  });
+}
+function xlSerial(d){return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(1899,11,30))/86400000)}
+/* keep Consumption dated at least 60 days ahead; adds a year of dated rows with formulas when it gets close */
+function ensureConsDays(){
+  var last=S.cons&&S.cons.length?S.cons[S.cons.length-1]:null;if(!last)return Promise.resolve(false);
+  var t=new Date();t.setHours(0,0,0,0);t.setDate(t.getDate()+60);
+  if(last.key>=iso(t))return Promise.resolve(false);
+  var n=366,tpl=last.row;
+  return growRows('Consumption',tpl,n,1,9,9,12).then(function(){
+    var d=new Date(last.date.getFullYear(),last.date.getMonth(),last.date.getDate()),vals=[];
+    for(var i=0;i<n;i++){d.setDate(d.getDate()+1);vals.push([xlSerial(d)])}
+    return wr('Consumption!B'+(tpl+1)+':B'+(tpl+n),vals);
+  }).then(function(){return true});
+}
 
 /* ---------- toast / tip ---------- */
 var toastT;function toast(msg){var t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(function(){t.style.display='none'},3800)}
@@ -1007,10 +1048,13 @@ function pgCons(){
   var wcols=[1,2,3,4,5,6,0].map(function(d){var v=wn[d]?wd[d]/wn[d]:0;return {label:WD[d],value:v,tip:WD[d]+' average\n'+baht(v)}});
   var daily=rr.map(function(c){return {label:dm(c.date),value:c.expense||0,tip:dmy(c.date)+'\nSpent '+baht(c.expense)+'\nIncome '+baht(c.income)}});
   var balPts=[{points:rr.map(function(c){return {x:c.date.getTime(),y:c.total,tip:dmy(c.date)+'\nBalance '+baht(c.total)}})}];
+  var avM=lsGet('fin.avgmode');if(avM!=='month'&&avM!=='year')avM='day';
+  var avMul=avM==='month'?365.25/12:(avM==='year'?365.25:1),avName=avM==='month'?'Monthly':(avM==='year'?'Yearly':'Daily');
+  var avChips=[['day','Day'],['month','Month'],['year','Year']].map(function(a){return '<button class="chip" type="button" data-act="avgmode" data-v="'+a[0]+'" aria-pressed="'+(avM===a[0])+'">'+a[1]+'</button>'}).join('');
   var chips=[['14','14 days'],['30','30 days'],['all','All time']].map(function(a){return '<button class="chip" type="button" data-act="range" data-v="'+a[0]+'" aria-pressed="'+(S.range===a[0])+'">'+a[1]+'</button>'}).join('');
   return head('Consumption','')
-    +'<div class="row" style="justify-content:space-between"><div class="chips">'+chips+'</div></div>'
-    +'<div class="tiles">'+tile('Balance',baht(bal))+tile('Daily Average',baht(avg))+tile('Total Income',baht(sum(rr,function(c){return c.income||0})))+tile('Total Expense',baht(spent))+'</div>'
+    +'<div class="row" style="justify-content:space-between"><div class="chips">'+chips+'</div><div class="chips">'+avChips+'</div></div>'
+    +'<div class="tiles">'+tile('Balance',baht(bal))+tile(avName+' Average',baht(avg*avMul))+tile('Total Income',baht(sum(rr,function(c){return c.income||0})))+tile('Total Expense',baht(spent))+'</div>'
     +'<div class="grid">'+consForm()
     +card('Daily Spending','Total spent each day',mount(function(w){return colSvg(w,220,daily,{label:'Daily spending'})}))
     +card('Balance','',mount(function(w){return lineSvg(w,220,balPts,{zero:true,area:true,label:'Balance'})}))
@@ -1367,6 +1411,7 @@ document.addEventListener('click',function(ev){
   if(act==='setup-open'){S.err={code:'setup'};S.loaded=false;render();return}
   if(act==='setup-save'){var cv=(document.getElementById('cid-in').value||'').trim();if(!/\.apps\.googleusercontent\.com$/.test(cv)){document.getElementById('cid-err').textContent='That does not look like a client ID. It ends with .apps.googleusercontent.com';return}
     lsSet('fin.clientId',cv);CLIENT_ID=cv;S.err={code:'needs_signin'};render();return}
+  if(act==='avgmode'){lsSet('fin.avgmode',b.getAttribute('data-v'));render();return}
   if(act==='range'){S.range=b.getAttribute('data-v');render();return}
   if(act==='pfyear'){S.pfYear=b.getAttribute('data-v');render();return}
   if(act==='divyear'){S.divYear=b.getAttribute('data-v');render();return}
