@@ -982,6 +982,32 @@ function calcUpd(){
   if(u>0&&p>0){var b=trade(u,p,'buy'),s=trade(u,p,'sell');el.textContent='Value '+baht(b.val)+' · Fees and VAT '+baht(b.fees)+' · Buy total '+baht(b.total)+' · Sell net '+baht(s.total)}
   else el.textContent='';
 }
+/* totals box for the dashboard: pick a tab and a year; shows income, expense, net and monthly / yearly averages */
+var TOTTABS=[['cons','Consumption'],['set','Share'],['fund','Fund'],['usd','Saving'],['shop','Shopping']];
+function totRows(k){
+  if(k==='cons')return recs().map(function(c){return {d:c.date,i:c.income||0,e:c.expense||0}});
+  return (S[k]||[]).filter(function(x){return x.date}).map(function(x){return {d:x.date,i:x.inc||0,e:x.exp||0}});
+}
+function totalsCard(){
+  var tab=lsGet('fin.totab');if(!TOTTABS.some(function(t){return t[0]===tab}))tab='cons';
+  var all=totRows(tab).sort(function(a,b){return a.d-b.d}),yrs=[];
+  all.forEach(function(r){var y=String(r.d.getFullYear());if(yrs.indexOf(y)<0)yrs.push(y)});
+  var sel=lsGet('fin.totyear');if(sel!=='all'&&yrs.indexOf(sel)<0)sel='all';
+  var rows=sel==='all'?all:all.filter(function(r){return String(r.d.getFullYear())===sel});
+  var tabChips=TOTTABS.map(function(t){return '<button class="chip" type="button" data-act="totab" data-v="'+t[0]+'" aria-pressed="'+(tab===t[0])+'">'+t[1]+'</button>'}).join('');
+  var body;
+  if(!rows.length)body='<span class="sub">No records yet.</span>';
+  else{
+    var inc=sum(rows,function(r){return r.i}),exp=sum(rows,function(r){return r.e}),net=inc-exp;
+    var first=rows[0].d,last=rows[rows.length-1].d,span=Math.round((last-first)/864e5)+1;
+    var mo=Math.max(span/30.4375,1),yr=Math.max(span/365.25,1);
+    body='<div class="tiles">'+tile('Total Income',baht(inc))+tile('Total Expense',baht(exp))+tile('Net',(net<0?'−':'')+baht(Math.abs(net)))+'</div>'
+      +'<div class="tiles" style="margin-top:12px">'+tile('Monthly Income',baht(inc/mo))+tile('Monthly Expense',baht(exp/mo))+tile('Yearly Income',baht(inc/yr))+tile('Yearly Expense',baht(exp/yr))+'</div>'
+      +'<small class="sub" style="display:block;margin-top:8px">'+dmy(first)+' – '+dmy(last)+' · averages use the days between the first and last record, never less than one month or one year.</small>';
+  }
+  var yChips=[['all','All']].concat(yrs.map(function(y){return [y,y]})).map(function(a){return '<button class="chip" type="button" data-act="totyear" data-v="'+a[0]+'" aria-pressed="'+(sel===a[0])+'">'+a[1]+'</button>'}).join('');
+  return card('Total Income & Expense','','<div class="chips" style="margin-bottom:8px">'+tabChips+'</div><div class="chips" style="margin-bottom:12px">'+yChips+'</div>'+body);
+}
 function pgDash(){
   var weekly=num(D('F',2)),total=num(D('I',10)),cash=num(D('K',30));
   var port=[['Gold',6],['Share',7],['Fund',8],['Saving',9]].map(function(a){return {label:a[0],value:num(D('I',a[1]))||0,color:ENT[a[0]],dark:a[0]==='Share'||a[0]==='Shopping'||a[0]==='Fund'}});
@@ -1004,6 +1030,7 @@ function pgDash(){
     +'<div class="grid">'
     +card('Income Allocation',baht(weekly)+' a week, by purpose',segbar(purp)+'<div class="row" style="margin-top:14px"><button class="btn primary" data-act="allow-open" type="button">Add allowance</button></div>')
     +card('Cash','',hbars(cashItems))
+    +totalsCard()
     +card('Daily Allocation','',hbars(cat))
     +card('Other Expenses','',hbars(oth))
     +card('Daily Spending','Total spent each day',mount(function(w){return colSvg(w,220,daily,{color:'var(--e-cons)',label:'Spending last 30 days'})}))
@@ -1412,6 +1439,8 @@ document.addEventListener('click',function(ev){
   if(act==='setup-open'){S.err={code:'setup'};S.loaded=false;render();return}
   if(act==='setup-save'){var cv=(document.getElementById('cid-in').value||'').trim();if(!/\.apps\.googleusercontent\.com$/.test(cv)){document.getElementById('cid-err').textContent='That does not look like a client ID. It ends with .apps.googleusercontent.com';return}
     lsSet('fin.clientId',cv);CLIENT_ID=cv;S.err={code:'needs_signin'};render();return}
+  if(act==='totab'){lsSet('fin.totab',b.getAttribute('data-v'));render();return}
+  if(act==='totyear'){lsSet('fin.totyear',b.getAttribute('data-v'));render();return}
   if(act==='avgmode'){lsSet('fin.avgmode',b.getAttribute('data-v'));render();return}
   if(act==='range'){S.range=b.getAttribute('data-v');render();return}
   if(act==='pfyear'){S.pfYear=b.getAttribute('data-v');render();return}
