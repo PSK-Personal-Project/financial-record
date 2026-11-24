@@ -600,6 +600,18 @@ main{position:relative}
 .mkd summary::before{content:"";display:inline-block;width:5px;height:5px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
 .mkd[open] summary::before{transform:translateY(0) rotate(-135deg)}
 .mkd summary:hover{opacity:1;background:rgba(0,0,0,.07)}
+
+/* round dropdowns and the totals box */
+.pillsel{appearance:none;-webkit-appearance:none;border:1.5px solid var(--stroke,var(--line));border-radius:999px;background-color:var(--surface);color:var(--ink);font-weight:600;font-size:inherit;padding:5px 32px 5px 14px;cursor:pointer;min-width:0;max-width:100%;transition:background-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.pillsel:hover{background-color:var(--wash)}
+.pillsel:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:12px}
+.tot-c{position:relative;border:1.5px solid var(--stroke,var(--line));border-radius:18px;padding:14px 16px;min-width:0;background:color-mix(in srgb,var(--tc) 22%,var(--surface))}
+.tot-c .lbl{display:block;font-weight:700}
+.tot-c .tot-n{display:block;font-size:clamp(22px,1.6vw + 13px,30px);font-weight:800;letter-spacing:-.02em;margin:2px 0 10px;overflow-wrap:anywhere}
+.tot-r{display:flex;justify-content:space-between;gap:10px;padding-top:7px;border-top:1px solid color-mix(in srgb,var(--ink) 18%,transparent);color:var(--ink2);font-size:.9em}
+.tot-r b{color:var(--ink);font-weight:700}
 </style>
 </head>
 <body>
@@ -903,6 +915,8 @@ function segbar(parts){
   var lg=parts.map(function(p){return '<span><em style="background:'+p.color+'"></em>'+esc(p.label)+' <b>'+baht(p.value)+'</b></span>'}).join('');
   return '<div class="seg" role="img" aria-label="Share of total">'+seg+'</div><div class="legend">'+lg+'</div>';
 }
+function pillSel(key,cur,list,label){return '<select class="pillsel" data-pill="'+key+'" aria-label="'+label+'">'+list.map(function(o){return '<option value="'+esc(o[0])+'"'+(String(cur)===String(o[0])?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select>'}
+function yrList(ys){return [['all','Overall']].concat(ys.map(function(y){return [y,y]}))}
 function card(title,sub,body,cls){return '<section class="card '+(cls||'')+'"><h2>'+esc(tc(title))+'</h2>'+'<div style="height:10px"></div>'+body+'</section>'}
 function tile(l,v,s,cls){return '<div class="tile"><span class="lbl">'+esc(tc(l))+'</span><b class="'+(cls||'')+(String(v).charAt(0)==='−'?' neg':'')+'">'+v+'</b></div>'}
 
@@ -994,19 +1008,17 @@ function totalsCard(){
   all.forEach(function(r){var y=String(r.d.getFullYear());if(yrs.indexOf(y)<0)yrs.push(y)});
   var sel=lsGet('fin.totyear');if(sel!=='all'&&yrs.indexOf(sel)<0)sel='all';
   var rows=sel==='all'?all:all.filter(function(r){return String(r.d.getFullYear())===sel});
-  var selCss='border:1px solid var(--axis);background:var(--surface);border-radius:8px;padding:6px 10px;min-width:0;max-width:100%';
-  var tabSel='<select data-tot="tab" aria-label="Tab" style="'+selCss+'">'+TOTTABS.map(function(t){return '<option value="'+t[0]+'"'+(tab===t[0]?' selected':'')+'>'+t[1]+'</option>'}).join('')+'</select>';
-  var ySel='<select data-tot="year" aria-label="Year" style="'+selCss+'"><option value="all"'+(sel==='all'?' selected':'')+'>Overall</option>'+yrs.map(function(y){return '<option value="'+y+'"'+(sel===y?' selected':'')+'>'+y+'</option>'}).join('')+'</select>';
+  var tabSel=pillSel('totab',tab,TOTTABS,'Tab'),ySel=pillSel('totyear',sel,yrList(yrs),'Year');
   var body;
   if(!rows.length)body='<span class="sub">No records yet.</span>';
   else{
     var inc=sum(rows,function(r){return r.i}),exp=sum(rows,function(r){return r.e});
     var first=rows[0].d,last=rows[rows.length-1].d,span=Math.round((last-first)/864e5)+1;
     var mo=Math.max(span/30.4375,1),yr=Math.max(span/365.25,1);
-    var tl=function(l,v,m,y){return '<div class="tile"><span class="lbl">'+l+'</span><b>'+baht(v)+'</b><small>Monthly '+baht(m)+' · Yearly '+baht(y)+'</small></div>'};
-    body='<div class="tiles">'+tl('Total Income',inc,inc/mo,inc/yr)+tl('Total Expense',exp,exp/mo,exp/yr)+'</div>';
+    var tl=function(l,v,m,y,c){return '<div class="tot-c" style="--tc:'+c+'"><span class="lbl">'+l+'</span><span class="tot-n">'+baht(v)+'</span><div class="tot-r"><span>Monthly</span><b>'+baht(m)+'</b></div><div class="tot-r"><span>Yearly</span><b>'+baht(y)+'</b></div></div>'};
+    body='<div class="tot">'+tl('Total Income',inc,inc/mo,inc/yr,'var(--e-shop)')+tl('Total Expense',exp,exp/mo,exp/yr,'var(--e-cons)')+'</div>';
   }
-  return card('Total Income & Expense','','<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">'+tabSel+ySel+'</div>'+body);
+  return card('Total Income & Expense','','<div class="pills">'+tabSel+ySel+'</div>'+body);
 }
 function pgDash(){
   var weekly=num(D('F',2)),total=num(D('I',10)),cash=num(D('K',30));
@@ -1251,7 +1263,7 @@ function pgSet(){
   pfRows.filter(function(e){return py==='all'||String(e.date.getFullYear())===py}).forEach(function(e){var k=pfBy[e.a]||(pfBy[e.a]={sh:0,buySh:0,buy:0,net:0}),q=num(e.b);k.sh+=q;if(q>0){k.buySh+=q;k.buy+=e.exp}k.net+=e.exp-e.inc});
   if(py==='all'){pfTot=inv;pwb=st.map(function(s){return {label:s.stock+'('+s.shares+')',value:s.pwb||0,text:baht(s.pwb)+(s.shares?' · '+baht(s.pwb/s.shares):''),sub:(s.shares&&s.mp>0)?mkSub(s.pwb,s.pwb/s.shares,s.shares*s.mp,s.mp,mkN,true):'',tip:s.stock+'\n'+s.shares+' shares\nPaid '+baht(s.pwb)+'\nPrice basis '+baht(s.shares?s.pwb/s.shares:null)+(s.mp>0?'\nMarket '+baht(s.shares*s.mp)+' @ '+baht(s.mp):'')}})}
   else{pwb=holdAll('Stock').filter(function(h){return isActive(h)||pfBy[h.name]}).map(function(h){return {stock:h.name}}).map(function(s){var k=pfBy[s.stock]||{sh:0,buySh:0,buy:0,net:0};pfTot+=k.net;return {label:s.stock+'('+(k.sh>0?'+':'')+k.sh+')',value:k.net,text:baht(k.net)+(k.buySh?' · '+baht(k.buy/k.buySh):''),tip:s.stock+' in '+py+'\n'+(k.sh>0?'+':'')+k.sh+' shares\nNet invested '+baht(k.net)+(k.buySh?'\nAverage buy price '+baht(k.buy/k.buySh):'')}})}
-  var pfChips='<div class="chips" style="margin-bottom:10px">'+['all'].concat(pfYears).map(function(y){return '<button class="chip" type="button" data-act="pfyear" data-v="'+y+'" aria-pressed="'+(py===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>';
+  var pfChips='<div class="pills">'+pillSel('pfyear',py,yrList(pfYears),'Year')+'</div>';
   var pfAdd='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Stock">New Stock</button></div>';
   var mkTot=sum(st,function(x){return x.mp>0&&x.shares?x.shares*x.mp:(x.pwb||0)}),mkAny=st.some(function(x){return x.mp>0&&x.shares});
   var pfTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(py==="all"?'Overall portfolio':'Net invested in '+py)+'</span><b>'+baht(pfTot)+(py==='all'&&mkAny?mkOne(mkN(mkTot),mkTot,pfTot):'')+'</b></div>';
@@ -1262,7 +1274,7 @@ function pgSet(){
   var dy=(S.divYear&&dvYears.indexOf(S.divYear)>=0)?S.divYear:'all',dvBy={},dvTot=0,pwbTot=0;
   dvAll.filter(function(e){return dy==='all'||String(e.date.getFullYear())===dy}).forEach(function(e){dvBy[e.a]=(dvBy[e.a]||0)+e.inc});
   var dv=holdAll('Stock').filter(function(h){return isActive(h)||h.div>0||dvBy[h.name]}).map(function(h){var v=dy==='all'?h.div:(dvBy[h.name]||0),y=h.cost>1e-6?v/h.cost:null;dvTot+=v;pwbTot+=h.cost>0?h.cost:0;return {label:h.name,value:v,text:baht(v)+(y!=null?' · '+pc(y):''),tip:h.name+'\n'+(dy==='all'?'Overall':dy)+'\nDividend '+baht(v)+(y!=null?'\nYield on cost '+pc(y):'\nNo longer held')}});
-  var dvChips='<div class="chips" style="margin-bottom:10px">'+['all'].concat(dvYears).map(function(y){return '<button class="chip" type="button" data-act="divyear" data-v="'+y+'" aria-pressed="'+(dy===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>';
+  var dvChips='<div class="pills">'+pillSel('divyear',dy,yrList(dvYears),'Year')+'</div>';
   var dvTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(dy==='all'?'Overall dividend':'Dividend in '+dy)+'</span><b>'+baht(dvTot)+' · '+pc(pwbTot?dvTot/pwbTot:0)+'</b></div>';
   var cl=balLine(S.set,'Cash');
   return head('SET 50','')
@@ -1286,7 +1298,7 @@ function pgFund(){
   rowsF.filter(function(e){return fy==='all'||String(e.date.getFullYear())===fy}).forEach(function(e){var k=by[e.a]||(by[e.a]={u:0,bu:0,buy:0,net:0}),q=num(e.b);k.u+=q;if(q>0){k.bu+=q;k.buy+=e.exp}k.net+=e.exp-e.inc});
   if(fy==='all'){tot=inv;pwb=fs.map(function(f){return {label:f.fund+'('+u4(f.units)+')',value:f.pwb||0,text:baht(f.pwb)+(f.basis!=null?' · '+baht(f.basis):''),tip:f.fund+'\n'+u4(f.units)+' units\nInvested '+baht(f.pwb)+'\nPrice basis '+baht(f.basis)}})}
   else{pwb=holdAll('Fund').filter(function(h){return isActive(h)||by[h.name]}).map(function(h){var k=by[h.name]||{u:0,bu:0,buy:0,net:0};tot+=k.net;return {label:h.name+'('+(k.u>0?'+':'')+u4(k.u)+')',value:k.net,text:baht(k.net)+(k.bu?' · '+baht(k.buy/k.bu):''),tip:h.name+' in '+fy+'\n'+(k.u>0?'+':'')+u4(k.u)+' units\nNet invested '+baht(k.net)+(k.bu?'\nAverage buy price '+baht(k.buy/k.bu):'')}})}
-  var chips=function(act,cur){return '<div class="chips" style="margin-bottom:10px">'+['all'].concat(yrs).map(function(y){return '<button class="chip" type="button" data-act="'+act+'" data-v="'+y+'" aria-pressed="'+(cur===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>'};
+  var chips=function(act,cur){return '<div class="pills">'+pillSel(act,cur,yrList(yrs),'Year')+'</div>'};
   var tl='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(fy==='all'?'Overall fund investment':'Net invested in '+fy)+'</span><b>'+baht(tot)+'</b></div>';
   var add='<div class="formfoot"><button class="btn sm" type="button" data-act="hold-open" data-kind="Fund">New Fund</button></div>';
   var basis=fs.map(function(f){return {label:f.fund,value:f.basis||0,text:baht(f.basis)}});
@@ -1297,7 +1309,7 @@ function pgFund(){
   var sold=sum(sl,function(e){return e.inc}),gain=sum(sl,function(e){return e.profit||0}),gainAll=sum(sales,function(e){return e.profit||0});
   var sitems=sl.map(function(e){var u=-num(e.b),p=e.profit==null?0:e.profit,cb=e.cost;
     return {label:dm(e.date)+' · '+e.a,value:p,color:'var(--good)',text:sgn(p),tip:e.a+' · '+dmy(e.date)+'\nSold '+u4(u)+' units for '+baht(e.inc)+'\nSale price '+baht(e.inc/u)+' per unit'+(cb!=null?'\nPrice basis '+baht(cb/u)+' per unit':'')+'\n'+(p>=0?'Profit ':'Loss ')+baht(Math.abs(p))}});
-  var schips='<div class="chips" style="margin-bottom:10px">'+['all'].concat(sy).map(function(y){return '<button class="chip" type="button" data-act="fsyear" data-v="'+y+'" aria-pressed="'+(fsy===y)+'">'+(y==='all'?'Overall':y)+'</button>'}).join('')+'</div>';
+  var schips='<div class="pills">'+pillSel('fsyear',fsy,yrList(sy),'Year')+'</div>';
   var stl='<div class="row" style="justify-content:space-between;margin-bottom:4px"><span class="lbl">Sold</span><b>'+baht(sold)+'</b></div><div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(gain>=0?'Profit':'Loss')+'</span><b class="'+(gain<0?'neg':gain>0?'pos':'')+'">'+baht(Math.abs(gain))+'</b></div>';
   var warn=miss.length?'<div class="note warn">'+miss.map(function(e){return esc(e.a)+' bought '+(e.date?dmy(e.date):'')+' for '+baht(e.exp)}).join(', ')+' has no units recorded, so the unit count and price basis ignore it. Use Edit below to add the units.</div>':'';
   return head('Fund','')+warn
@@ -1514,6 +1526,8 @@ document.addEventListener('change',function(ev){
   var t=ev.target;
   if(t.id==='avatar-in'){var f=t.files&&t.files[0];t.value='';avPick(f);return}
   if(t.hasAttribute&&t.hasAttribute('data-cdate')){if(t.value){consPick(t.value);S.formErr.cons='';render()}return}
+  if(t.getAttribute&&t.getAttribute('data-pill')){var pk=t.getAttribute('data-pill'),M={pfyear:'pfYear',divyear:'divYear',fyyear:'fyYear',fsyear:'fsYear'};
+    if(M[pk]){S[M[pk]]=t.value;render()}else if(pk==='totab'){lsSet('fin.totab',t.value);render()}else if(pk==='totyear'){lsSet('fin.totyear',t.value);render()}return}
   if(t.getAttribute&&t.getAttribute('data-tot')){lsSet(t.getAttribute('data-tot')==='tab'?'fin.totab':'fin.totyear',t.value);render();return}
   if(t.hasAttribute&&t.hasAttribute('data-f')&&t.tagName==='SELECT'){S.f[t.getAttribute('data-tab')].v[t.getAttribute('data-f')]=t.value}
   if(t.hasAttribute&&t.hasAttribute('data-cf')&&t.tagName==='SELECT'){S.cf.v.title=t.value}
