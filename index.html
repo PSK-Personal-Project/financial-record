@@ -612,6 +612,7 @@ main{position:relative}
 .tot-c .tot-n{display:block;font-size:clamp(22px,1.6vw + 13px,30px);font-weight:800;letter-spacing:-.02em;margin:2px 0 10px;overflow-wrap:anywhere}
 .tot-r{display:flex;justify-content:space-between;gap:10px;padding-top:7px;border-top:1px solid color-mix(in srgb,var(--ink) 18%,transparent);color:var(--ink2);font-size:.9em}
 .tot-r b{color:var(--ink);font-weight:700}
+
 </style>
 </head>
 <body>
@@ -773,8 +774,9 @@ function loadAll(){
     S.dash=d;
     return Promise.all([rd('Consumption!B3:L3000'),rd("'SET 50'!B2:J3000"),rd('Fund!B2:L3000'),rd('USD!B2:J3000'),rd('Shopping!B2:H3000'),rd('Holdings!A2:Q60')]);
   }).then(function(a){
-    S.cons=parseCons(a[0]);S.set=parseLedger(a[1],'set');S.fund=parseLedger(a[2],'fund');S.usd=parseLedger(a[3],'usd');S.shop=parseLedger(a[4],'shop');S.hold=parseHold(a[5]);S.fx=num(C((a[5]||[])[0],16));
+    S.cons=parseCons(a[0]);S.set=parseLedger(a[1],'set');S.fund=parseLedger(a[2],'fund');S.usd=parseLedger(a[3],'usd');S.shop=parseLedger(a[4],'shop');var oldH=S.hold||[];S.hold=parseHold(a[5]);S.hold.forEach(function(h){if(!(h.mp>0)){var o=oldH.filter(function(x){return x.name===h.name&&x.mp>0})[0];if(o)h.mp=o.mp}});S.fx=num(C((a[5]||[])[0],16));S.priceAt=String(C((a[5]||[])[0],15)||'');
     S.loaded=true;S.syncedAt=new Date();
+    rd('Holdings!P1').then(function(v){var cur=+C(v[0],0)||0,b=Math.floor(Date.now()/180000);if(b!==cur)return wr('Holdings!P1',[[b]])}).catch(function(){});
     return ensureConsDays().then(function(g){if(!g)return;return rd('Consumption!B3:L3000').then(function(v){S.cons=parseCons(v)})}).catch(function(){});
   }).catch(function(e){S.err=e||{code:'unknown'}}).then(function(){S.busy=false;render()});
 }
@@ -1278,6 +1280,7 @@ function pgSet(){
   var dvTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(dy==='all'?'Overall dividend':'Dividend in '+dy)+'</span><b>'+baht(dvTot)+' · '+pc(pwbTot?dvTot/pwbTot:0)+'</b></div>';
   var cl=balLine(S.set,'Cash');
   return head('SET 50','')
+    +(S.priceAt?'<small class="sub" style="display:block;margin-bottom:8px">Market prices from Google Finance, last trade '+esc(S.priceAt)+'. They refresh by themselves every few minutes while this page is open.</small>':'')
     +'<div class="tiles">'+tile('Cash',baht(cash),'Not yet invested')+tile('Invested',baht(inv),'At price bought')+tile('Dividends',baht(div),'Received')+tile('Stocks',String(st.length),'Held')+'</div>'
     +'<div class="grid">'+formCard('set')+feedCard('set')
     +card('Portfolio','',pfChips+pfTotal+hbars(pwb)+pfAdd)
