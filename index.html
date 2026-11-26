@@ -1280,7 +1280,6 @@ function pgSet(){
   var dvTotal='<div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="lbl">'+(dy==='all'?'Overall dividend':'Dividend in '+dy)+'</span><b>'+baht(dvTot)+' · '+pc(pwbTot?dvTot/pwbTot:0)+'</b></div>';
   var cl=balLine(S.set,'Cash');
   return head('SET 50','')
-    +(S.priceAt?'<small class="sub" style="display:block;margin-bottom:8px">Market prices from Google Finance, last trade '+esc(S.priceAt)+'. They refresh by themselves every few minutes while this page is open.</small>':'')
     +'<div class="tiles">'+tile('Cash',baht(cash),'Not yet invested')+tile('Invested',baht(inv),'At price bought')+tile('Dividends',baht(div),'Received')+tile('Stocks',String(st.length),'Held')+'</div>'
     +'<div class="grid">'+formCard('set')+feedCard('set')
     +card('Portfolio','',pfChips+pfTotal+hbars(pwb)+pfAdd)
